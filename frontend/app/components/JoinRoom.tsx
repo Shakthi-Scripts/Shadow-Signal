@@ -7,7 +7,10 @@ export default function JoinRoom() {
 
       <div className="relative rounded-xl border border-emerald-400/30 bg-emerald-950/40 p-8 backdrop-blur-md">
         <div className="mb-6 flex items-center gap-3">
-          <span className="text-lg text-[rgb(0,209,174)]">▸</span>
+          <span className="material-symbols-outlined text-[rgb(0,209,174)]">
+            terminal
+          </span>
+
           <h3 className="text-lg font-semibold tracking-wide text-white">
             INFILTRATE OPERATION
           </h3>
