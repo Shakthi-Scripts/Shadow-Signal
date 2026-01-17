@@ -18,12 +18,12 @@ export default function Home() {
         <div className="flex flex-col gap-8 md:flex-row md:items-start">
           <RoleSecretCode
             word="BEACH"
-            wordColor="text-white"
+            wordColor="#ffffff"
             secretWord="SECRET WORD"
           />
 
           <div className="flex w-full max-w-md flex-col">
-            <RoleCurrentAssignment role="AGENT" roleColor="text-white" />
+            <RoleCurrentAssignment role="AGENT" roleColor="#ffffff" />
             <StartGameButton />
           </div>
         </div>
