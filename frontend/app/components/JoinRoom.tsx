@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import api from "../libs/api";
 
 export default function JoinRoom() {
-  const [ accessCode, setAccessCode ] = useState<string>("");
-  const [ alias , setAlias ] = useState<string>("");
+  const [accessCode, setAccessCode] = useState<string>("");
+  const [alias, setAlias] = useState<string>("");
 
   const handleJoinRoom = async () => {
     if (accessCode?.length === 0 || alias?.length === 0) return;
@@ -45,7 +45,7 @@ export default function JoinRoom() {
               OPERATOR ID
             </label>
             <input
-            onInput={(e) => setAlias(e.currentTarget.value)}
+              onInput={(e) => setAlias(e.currentTarget.value)}
               type="text"
               placeholder="Enter Alias"
               className="w-full rounded-md border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-white/30 focus:border-emerald-400/60 focus:outline-none"

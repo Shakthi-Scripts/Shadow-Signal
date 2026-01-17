@@ -17,13 +17,13 @@ export default function Home() {
       <div className="mx-auto -mt-6 max-w-6xl px-6">
         <div className="flex flex-col gap-8 md:flex-row md:items-start">
           <RoleSecretCode
-            word="BEACH"
-            wordColor="text-white"
-            secretWord="SECRET WORD"
+            word="WATER"
+            wordColor="#dc2626"
+            secretWord="IMPOSTER'S SECRET WORD"
           />
 
           <div className="flex w-full max-w-md flex-col">
-            <RoleCurrentAssignment role="AGENT" roleColor="text-white" />
+            <RoleCurrentAssignment role="IMPOSTER" roleColor="#dc2626" />
             <StartGameButton />
           </div>
         </div>
