@@ -1,6 +1,13 @@
+"use client"
+
 import React from "react";
+import api from "../libs/api";
 
 export default function CreateRoom() {
+  const handleCreateRoom: React.MouseEventHandler = async (e) => {
+    e.preventDefault();
+    await api.createRoom();
+  };
   return (
     <div className="relative w-full max-w-xl">
       <div className="absolute -inset-1 -z-10 rounded-xl bg-[rgb(0,209,174)] opacity-40 blur-xl" />
@@ -27,7 +34,10 @@ export default function CreateRoom() {
           </span>
         </div>
 
-        <button className="w-full rounded-md border border-[rgb(0,209,174)] bg-transparent px-6 py-4 text-sm font-semibold tracking-widest text-[rgb(0,209,174)] transition hover:bg-[rgb(0,209,174)]/10">
+        <button
+          onClick={handleCreateRoom}
+          className="w-full rounded-md border border-[rgb(0,209,174)] bg-transparent px-6 py-4 text-sm font-semibold tracking-widest text-[rgb(0,209,174)] transition hover:bg-[rgb(0,209,174)]/10"
+        >
           INITIALIZE ROOM
         </button>
       </div>

@@ -1,6 +1,17 @@
-import React from "react";
+"use client"
+
+import React, { useState } from "react";
+import api from "../libs/api";
 
 export default function JoinRoom() {
+  const [ accessCode, setAccessCode ] = useState<string>("");
+  const [ alias , setAlias ] = useState<string>("");
+
+  const handleJoinRoom = async () => {
+    if (accessCode?.length === 0 || alias?.length === 0) return;
+    await api.joinRoom(accessCode, alias);
+  };
+
   return (
     <div className="relative w-full max-w-xl">
       <div className="absolute -inset-px -z-10 rounded-xl bg-[rgb(0,209,174)] opacity-30 blur-lg" />
@@ -22,6 +33,7 @@ export default function JoinRoom() {
               ACCESS CODE
             </label>
             <input
+              onInput={(e) => setAccessCode(e.currentTarget.value)}
               type="text"
               placeholder="e.g. XJ-99"
               className="w-full rounded-md border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-white/30 focus:border-emerald-400/60 focus:outline-none"
@@ -33,6 +45,7 @@ export default function JoinRoom() {
               OPERATOR ID
             </label>
             <input
+            onInput={(e) => setAlias(e.currentTarget.value)}
               type="text"
               placeholder="Enter Alias"
               className="w-full rounded-md border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-white/30 focus:border-emerald-400/60 focus:outline-none"
@@ -41,7 +54,10 @@ export default function JoinRoom() {
         </div>
 
         <div className="mt-8 flex items-center gap-4">
-          <button className="rounded-md bg-[rgb(0,209,174)] px-6 py-3 text-sm font-semibold tracking-widest text-black transition hover:opacity-90">
+          <button
+            onClick={handleJoinRoom}
+            className="rounded-md bg-[rgb(0,209,174)] px-6 py-3 text-sm font-semibold tracking-widest text-black transition hover:opacity-90"
+          >
             JOIN ROOM
           </button>
 
