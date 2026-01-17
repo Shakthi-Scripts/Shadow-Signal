@@ -1,0 +1,31 @@
+import RoleCurrentAssignment from "@/app/components/RoleCurrentAssignment";
+import RoleFooter from "@/app/components/RoleFooter";
+import RoleMainText from "@/app/components/RoleMainText";
+import RoleNavBar from "@/app/components/RoleNavBar";
+import RoleSecretCode from "@/app/components/RoleSecretCode";
+import StartGameButton from "@/app/components/StartGameButton";
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-[rgb(15,21,23)]">
+      <RoleNavBar />
+
+      <div className="flex pt-16">
+        <RoleMainText />
+      </div>
+
+      <div className="mx-auto -mt-6 max-w-6xl px-6">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start">
+          <RoleSecretCode />
+
+          <div className="flex w-full max-w-md flex-col">
+            <RoleCurrentAssignment />
+            <StartGameButton />
+          </div>
+
+        </div>
+        <RoleFooter />
+      </div>
+    </div>
+  );
+}
