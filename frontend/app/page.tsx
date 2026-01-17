@@ -8,33 +8,33 @@ import Footer from "./components/Footer";
 
 export default function Home() {
   return (
-    <div className="bg-background-light dark:bg-background-dark min-h-screen bg-[rgb(15,35,32)]">
-      <div className="sticky top-0 z-50 flex h-18 justify-between border-b border-white/10 bg-emerald-950/40 p-5 backdrop-blur-md">
-        <div>
-          <h2 className="font-roboto text-xl font-bold text-[rgb(0,209,174)]">
-            SHADOW SIGNAL
-          </h2>
-        </div>
-        <div className="flex gap-5">
-          <LeftNavBar value="PROTOCOL" />
-          <LeftNavBar value="NODES" />
-          <LeftNavBar value="SUPPORT" />
+    <div className="sticky top-0 z-50 border-b border-white/10 backdrop-blur-md bg-[rgb(15,35,32)]">
+  <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-y-2 px-3 py-3 sm:px-4 md:flex-nowrap md:gap-y-0">
+    
+    <h2 className="text-xs sm:text-sm md:text-lg lg:text-xl xl:text-2xl font-bold text-[rgb(0,209,174)] whitespace-nowrap">
+      SHADOW SIGNAL
+    </h2>
 
-          <span className="relative inline-flex items-center gap-2 rounded-md border border-emerald-500/40 bg-emerald-950/60 px-4 py-2 text-sm font-semibold tracking-widest text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
-            </span>
-            ONLINE
-          </span>
-        </div>
+    <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-4 md:gap-6">
+      <LeftNavBar value="PROTOCOL" />
+      <LeftNavBar value="NODES" />
+      <LeftNavBar value="SUPPORT" />
+
+      <span className="relative inline-flex items-center gap-1.5 rounded-md border border-emerald-500/40 bg-emerald-950/60 px-3 py-1 text-[10px] sm:text-xs font-semibold tracking-widest text-emerald-400">
+        <span className="relative flex h-1.5 w-1.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+        </span>
+        ONLINE
+      </span>
+    </div>
       </div>
 
-      <div className="mt-4 flex justify-center gap-4 pt-10">
-        <h1 className="shadow-black-200 text-8xl font-bold text-white italic">
+      <div className="mt-4 flex flex-col items-center gap-2 pt-10 sm:flex-row sm:justify-center sm:gap-4">
+        <h1 className="text-6xl sm:text-7xl xl:text-8xl font-bold text-white italic">
           SHADOW
         </h1>
-        <h1 className="text-8xl font-bold text-[rgb(0,209,174)] italic [text-shadow:0_0_8px_rgba(0,209,174,0.8)]">
+        <h1 className="text-6xl sm:text-7xl xl:text-8xl font-bold text-[rgb(0,209,174)] italic [text-shadow:0_0_8px_rgba(0,209,174,0.8)]">
           SIGNAL
         </h1>
       </div>
