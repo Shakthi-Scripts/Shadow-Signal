@@ -2,28 +2,25 @@ import React from "react";
 
 export default function LobbyNavBar() {
   return (
-    <div className="sticky top-0 z-50 w-full border-b border-white/10 bg-emerald-950/40 backdrop-blur-md">
+    <div className="sticky top-0 z-50 w-full border-b border-white/10 bg-[rgb(15,22,21) backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        {/* Left */}
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-emerald-400/40 text-[rgb(0,209,174)]">
-            ◎
-          </div>
-
           <div>
-            <p className="text-sm font-semibold tracking-wide text-white">
+            <p className="text-xl font-semibold tracking-wide text-white">
               SHADOW SIGNAL
             </p>
-            <p className="text-[10px] tracking-widest text-[rgb(0,209,174)]">
-              ● SIGNAL ACTIVE
-            </p>
+           <span className="relative inline-flex items-center gap-1.5 rounded-md  px-3 py-1 text-[10px] sm:text-xs font-semibold tracking-widest text-emerald-400">
+        <span className="relative flex h-1.5 w-1.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+        </span>
+        SIGNAL ACTIVE
+      </span>
           </div>
         </div>
 
-        {/* Center (reserved) */}
-        <div />
 
-        {/* Right */}
+
         <div className="flex items-center gap-4">
           <div className="text-right">
             <p className="text-[10px] tracking-widest text-white/40">
