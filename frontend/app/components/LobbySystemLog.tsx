@@ -15,27 +15,23 @@ const logs: LogEntry[] = [
   { id: 6, time: "14:25:30", message: "Awaiting final signal sync…" },
 ];
 
-export default function SystemLog() {
+export default function LobbySystemLog() {
   return (
-    <aside className="w-full mt-4 mr-4 ml-2 max-w-sm border border-white/10 bg-black/20 p-4">
+    <aside className="mt-6 w-full min-w-0 border border-white/10 bg-black/20 p-4 lg:w-[22%] lg:min-w-60">
       <header className="mb-4">
         <h2 className="text-sm font-semibold text-white">SYSTEM LOG</h2>
       </header>
 
-      <div className="max-h-100 space-y-2 overflow-y-auto text-xs">
+      <div className="space-y-2 text-xs">
         {logs.map((log) => (
-          <LogItem key={log.id} log={log} />
+          <div key={log.id} className="flex gap-2 text-white/70">
+            <span className="whitespace-nowrap text-emerald-400">
+              [{log.time}]
+            </span>
+            <span className="wrap-break-word">{log.message}</span>
+          </div>
         ))}
       </div>
     </aside>
-  );
-}
-
-function LogItem({ log }: { log: LogEntry }) {
-  return (
-    <div className="flex gap-2 text-white/70">
-      <span className="text-emerald-400">[{log.time}]</span>
-      <span>{log.message}</span>
-    </div>
   );
 }

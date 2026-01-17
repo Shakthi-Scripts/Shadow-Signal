@@ -12,7 +12,7 @@ export default function BroadcastInput() {
   };
 
   return (
-    <div className="mt-6 ml-2 mr-2 rounded-md border border-white/10 bg-black/20 p-3">
+    <div className="w-ms mx-auto mt-6 mr-2 ml-2 max-w-6xl rounded-md border border-white/10 bg-black/20 p-3">
       <div className="flex items-center gap-2">
         <input
           type="text"

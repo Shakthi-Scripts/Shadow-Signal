@@ -8,7 +8,7 @@ export default function SelectMissionPanel() {
     useState<ProtocolType>("INFILTRATOR");
 
   return (
-    <main className="mt-4 ml-4 flex-1 border border-white/10 bg-black/20 p-6">
+    <main className="mt-6 h-full w-full flex-1 overflow-y-auto bg-black/20 p-6 lg:w-[56%]">
       <header className="mb-6">
         <h1 className="text-xl font-semibold text-white">
           SELECT MISSION PROTOCOL
@@ -21,12 +21,11 @@ export default function SelectMissionPanel() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div
           onClick={() => setSelectedProtocol("INFILTRATOR")}
-          className={`cursor-pointer rounded-md border p-6 transition-all
-            ${
-              selectedProtocol === "INFILTRATOR"
-                ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
-                : "border-white/10 bg-black/30 hover:border-white/30"
-            }`}
+          className={`cursor-pointer rounded-md border p-6 transition-all ${
+            selectedProtocol === "INFILTRATOR"
+              ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
+              : "border-white/10 bg-black/30 hover:border-white/30"
+          }`}
         >
           <h3 className="mb-3 text-sm font-semibold text-white">
             INFILTRATOR MODE
@@ -40,16 +39,13 @@ export default function SelectMissionPanel() {
 
         <div
           onClick={() => setSelectedProtocol("SPY")}
-          className={`cursor-pointer rounded-md border p-6 transition-all
-            ${
-              selectedProtocol === "SPY"
-                ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
-                : "border-white/10 bg-black/30 hover:border-white/30"
-            }`}
+          className={`cursor-pointer rounded-md border p-6 transition-all ${
+            selectedProtocol === "SPY"
+              ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
+              : "border-white/10 bg-black/30 hover:border-white/30"
+          }`}
         >
-          <h3 className="mb-3 text-sm font-semibold text-white">
-            SPY MODE
-          </h3>
+          <h3 className="mb-3 text-sm font-semibold text-white">SPY MODE</h3>
           <ul className="space-y-1 text-xs text-white/70">
             <li>• Identity deception focus</li>
             <li>• Double agent role</li>
@@ -58,31 +54,29 @@ export default function SelectMissionPanel() {
         </div>
       </div>
 
-      <div className="mt-8 flex flex-wrap items-center gap-6">
+      <div className="mt-8 flex flex-wrap gap-6">
         <div>
           <p className="mb-2 text-xs text-white/60">TIMER</p>
           <div className="flex gap-2">
-            <Button label="60s" />
-            <Button label="90s" />
-            <Button label="120s" />
+            <OptionButton label="60s" />
+            <OptionButton label="90s" />
+            <OptionButton label="120s" />
           </div>
         </div>
 
         <div>
           <p className="mb-2 text-xs text-white/60">DIFFICULTY</p>
           <div className="flex gap-2">
-            <Button label="Easy" />
-            <Button label="Hard" />
+            <OptionButton label="Easy" />
+            <OptionButton label="Hard" />
           </div>
         </div>
       </div>
 
-      <div className="mt-10 flex items-center justify-between border-t border-white/10 pt-6">
+      <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center">
         <div>
           <p className="text-sm text-white">SYSTEM STATUS</p>
-          <p className="text-xs text-emerald-400">
-            Ready for signal launch
-          </p>
+          <p className="text-xs text-emerald-400">Ready for signal launch</p>
         </div>
 
         <button className="rounded-md bg-emerald-500 px-6 py-3 text-sm font-semibold text-black">
@@ -93,7 +87,7 @@ export default function SelectMissionPanel() {
   );
 }
 
-function Button({ label }: { label: string }) {
+function OptionButton({ label }: { label: string }) {
   return (
     <button className="rounded-md border border-white/20 px-4 py-1.5 text-xs text-white hover:bg-white/10">
       {label}

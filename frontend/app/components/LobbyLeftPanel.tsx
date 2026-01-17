@@ -17,7 +17,7 @@ const players: Player[] = [
 
 export default function LobbyLeftPanel() {
   return (
-    <aside className="w-full max-w-sm border border-white/10 bg-black/20 p-4 mt-4 ml-2">
+    <aside className="mt-6 h-full w-full min-w-60 overflow-y-auto border-r border-white/10 bg-black/20 p-4 lg:w-[22%]">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-white">PERSONNEL</h2>
         <p className="text-sm text-emerald-400">
@@ -25,24 +25,19 @@ export default function LobbyLeftPanel() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="space-y-3">
         {players.map((player) => (
-          <PlayerCard key={player.id} player={player} />
+          <div
+            key={player.id}
+            className="rounded-md border border-white/10 bg-black/30 p-3"
+          >
+            <div className="text-sm font-semibold text-white">
+              {player.name}
+            </div>
+            <div className="mt-1 text-xs text-emerald-400">{player.status}</div>
+          </div>
         ))}
       </div>
     </aside>
-  );
-}
-
-function PlayerCard({ player }: { player: Player }) {
-  return (
-    <div className="rounded-md border border-white/10 bg-black/30 p-3">
-      <div className="text-sm font-semibold text-white">
-        {player.name}
-      </div>
-      <div className="mt-1 text-xs text-emerald-400">
-        {player.status}
-      </div>
-    </div>
   );
 }
