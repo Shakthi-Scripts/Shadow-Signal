@@ -1,6 +1,3 @@
-import React from "react";
-import StartGameButton from "./StartGameButton";
-
 type RoleCurrentAssignmentProps = {
   role: string;
   roleColor?: string;

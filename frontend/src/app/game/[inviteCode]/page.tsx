@@ -1,12 +1,12 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import LobbyNavBar from "@/app/components/LobbyNavBar";
-import LobbyLeftPanel from "@/app/components/LobbyLeftPanel";
-import SelectMissionPanel from "@/app/components/SelectMissionPanel";
-import LobbySystemLog from "@/app/components/LobbySystemLog";
-import LobbyBroadcast from "@/app/components/LobbyBroadcast";
-import LobbyFooter from "@/app/components/LobbyFooter";
+import LobbyNavBar from "@/components/LobbyNavBar";
+import LobbyLeftPanel from "@/components/LobbyLeftPanel";
+import SelectMissionPanel from "@/components/SelectMissionPanel";
+import LobbySystemLog from "@/components/LobbySystemLog";
+import LobbyBroadcast from "@/components/LobbyBroadcast";
+import LobbyFooter from "@/components/LobbyFooter";
 import { useState } from "react";
 
 export type mode = "infiltrator" | "spy";

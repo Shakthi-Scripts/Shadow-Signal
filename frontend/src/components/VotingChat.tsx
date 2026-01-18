@@ -35,7 +35,7 @@ export default function VotingChat() {
         </p>
 
         <p className="text-xs leading-relaxed text-white/40">
-          Select one player to <span className="italic">"Flag as Anomaly"</span>
+          Select one player to <span className="italic">&quot;Flag as Anomaly&quot;</span>
           . If the majority agrees, their signal will be severed permanently.
         </p>
       </div>

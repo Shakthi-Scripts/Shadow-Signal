@@ -50,7 +50,7 @@ export default function VotingRightPanel() {
         </p>
 
         <p className="mt-2 text-lg font-semibold tracking-widest text-white">
-          "BEACH"
+          &quot;BEACH&quot;
         </p>
 
         <p className="mt-2 text-xs text-white/40">

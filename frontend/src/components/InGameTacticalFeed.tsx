@@ -52,7 +52,7 @@ export default function InGameTacticalFeed() {
 
         <div className="rounded-md bg-white/5 px-3 py-2">
           <p className="text-xs tracking-widest text-white/40">VOID_WALKER</p>
-          <p className="text-white">Suspect. Nebula wasn't mentioned.</p>
+          <p className="text-white">Suspect. Nebula wasn&apos;t mentioned.</p>
         </div>
       </div>
 
