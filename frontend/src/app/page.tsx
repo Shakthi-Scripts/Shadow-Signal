@@ -1,10 +1,10 @@
 import React from "react";
-import LeftNavBar from "./components/LeftNavBar";
-import SubHeading from "./components/SubHeading";
-import JoinRoom from "./components/JoinRoom";
-import CreateRoom from "./components/CreateRoom";
-import BottomBar from "./components/BottomBar";
-import Footer from "./components/Footer";
+import LeftNavBar from "@/components/LeftNavBar";
+import SubHeading from "@/components/SubHeading";
+import JoinRoom from "@/components/JoinRoom";
+import CreateRoom from "@/components/CreateRoom";
+import BottomBar from "@/components/BottomBar";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (

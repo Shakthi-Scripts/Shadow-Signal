@@ -1,10 +1,10 @@
 "use client";
-import InGameEndTurnEarly from "@/app/components/InGameEndRound";
-import InGameHeaderStatus from "@/app/components/InGameHeader";
-import InGameNavBar from "@/app/components/InGameNavBar";
-import InGamePlayerGrid from "@/app/components/InGamePlayerGrid";
-import InGameSecretCard from "@/app/components/InGameSecretCard";
-import InGameTacticalFeed from "@/app/components/InGameTacticalFeed";
+import InGameEndTurnEarly from "@/components/InGameEndRound";
+import InGameHeaderStatus from "@/components/InGameHeader";
+import InGameNavBar from "@/components/InGameNavBar";
+import InGamePlayerGrid from "@/components/InGamePlayerGrid";
+import InGameSecretCard from "@/components/InGameSecretCard";
+import InGameTacticalFeed from "@/components/InGameTacticalFeed";
 
 export default function Home() {
   return (

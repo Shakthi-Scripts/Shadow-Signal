@@ -1,7 +1,7 @@
-import VotingNavBar from "@/app/components/VotingNavBar";
-import VotingChat from "@/app/components/VotingChat";
-import VotingCenter from "@/app/components/VotingCenter";
-import VotingRightPanel from "@/app/components/VotingRightPanel";
+import VotingNavBar from "@/components/VotingNavBar";
+import VotingChat from "@/components/VotingChat";
+import VotingCenter from "@/components/VotingCenter";
+import VotingRightPanel from "@/components/VotingRightPanel";
 
 export default function page() {
   return (

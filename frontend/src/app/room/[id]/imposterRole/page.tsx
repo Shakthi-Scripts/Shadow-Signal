@@ -1,9 +1,9 @@
-import RoleCurrentAssignment from "@/app/components/RoleCurrentAssignment";
-import RoleFooter from "@/app/components/RoleFooter";
-import RoleMainText from "@/app/components/RoleMainText";
-import RoleNavBar from "@/app/components/RoleNavBar";
-import RoleSecretCode from "@/app/components/RoleSecretCode";
-import StartGameButton from "@/app/components/StartGameButton";
+import RoleCurrentAssignment from "@/components/RoleCurrentAssignment";
+import RoleFooter from "@/components/RoleFooter";
+import RoleMainText from "@/components/RoleMainText";
+import RoleNavBar from "@/components/RoleNavBar";
+import RoleSecretCode from "@/components/RoleSecretCode";
+import StartGameButton from "@/components/StartGameButton";
 
 export default function Home() {
   return (
