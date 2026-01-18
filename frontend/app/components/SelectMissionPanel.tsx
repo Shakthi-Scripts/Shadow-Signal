@@ -1,11 +1,30 @@
 "use client";
-import React, { useState } from "react";
+import { Dispatch, SetStateAction } from "react";
+import {
+  difficulty,
+  GameStateType,
+  mode,
+  roundTimerS,
+  voteTimeS,
+} from "../game/[inviteCode]/page";
 
-type ProtocolType = "INFILTRATOR" | "SPY";
+type SelectMissionPanelProps = {
+  gameState: GameStateType;
+  setGameState: Dispatch<SetStateAction<GameStateType>>;
+};
 
-export default function SelectMissionPanel() {
-  const [selectedProtocol, setSelectedProtocol] =
-    useState<ProtocolType>("INFILTRATOR");
+export default function SelectMissionPanel({
+  gameState,
+  setGameState,
+}: SelectMissionPanelProps) {
+  const handleSetMode = (mode: mode) =>
+    setGameState((prev) => ({ ...prev, mode }));
+  const handleSetDifficulty = (difficulty: difficulty) =>
+    setGameState((prev) => ({ ...prev, difficulty }));
+  const handleSetRoundTimer = (roundTimerS: roundTimerS) =>
+    setGameState((prev) => ({ ...prev, roundTimerS }));
+  const handleSetVoteTimer = (voteTimeS: voteTimeS) =>
+    setGameState((prev) => ({ ...prev, voteTimeS }));
 
   return (
     <main className="mt-6 h-full w-full flex-1 overflow-y-auto bg-black/20 p-6 lg:w-[56%]">
@@ -20,9 +39,9 @@ export default function SelectMissionPanel() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div
-          onClick={() => setSelectedProtocol("INFILTRATOR")}
+          onClick={() => handleSetMode("infiltrator")}
           className={`cursor-pointer rounded-md border p-6 transition-all ${
-            selectedProtocol === "INFILTRATOR"
+            gameState.mode === "infiltrator"
               ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
               : "border-white/10 bg-black/30 hover:border-white/30"
           }`}
@@ -38,9 +57,9 @@ export default function SelectMissionPanel() {
         </div>
 
         <div
-          onClick={() => setSelectedProtocol("SPY")}
+          onClick={() => handleSetMode("spy")}
           className={`cursor-pointer rounded-md border p-6 transition-all ${
-            selectedProtocol === "SPY"
+            gameState.mode === "spy"
               ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
               : "border-white/10 bg-black/30 hover:border-white/30"
           }`}
@@ -56,19 +75,60 @@ export default function SelectMissionPanel() {
 
       <div className="mt-8 flex flex-wrap gap-6">
         <div>
-          <p className="mb-2 text-xs text-white/60">TIMER</p>
+          <p className="mb-2 text-xs text-white/60">ROUND TIMER</p>
           <div className="flex gap-2">
-            <OptionButton label="60s" />
-            <OptionButton label="90s" />
-            <OptionButton label="120s" />
+            <OptionButton
+              label="60s"
+              isActive={gameState.roundTimerS === 60}
+              onClick={() => handleSetRoundTimer(60)}
+            />
+            <OptionButton
+              label="90s"
+              isActive={gameState.roundTimerS === 90}
+              onClick={() => handleSetRoundTimer(90)}
+            />
+            <OptionButton
+              label="120s"
+              isActive={gameState.roundTimerS === 120}
+              onClick={() => handleSetRoundTimer(120)}
+            />
           </div>
         </div>
 
         <div>
           <p className="mb-2 text-xs text-white/60">DIFFICULTY</p>
           <div className="flex gap-2">
-            <OptionButton label="Easy" />
-            <OptionButton label="Hard" />
+            <OptionButton
+              label="Easy"
+              isActive={gameState.difficulty === "easy"}
+              onClick={() => handleSetDifficulty("easy")}
+            />
+            <OptionButton
+              label="Hard"
+              isActive={gameState.difficulty === "hard"}
+              onClick={() => handleSetDifficulty("hard")}
+            />
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-2 text-xs text-white/60">VOTE TIMER</p>
+          <div className="flex gap-2">
+            <OptionButton
+              label="20s"
+              isActive={gameState.voteTimeS === 20}
+              onClick={() => handleSetVoteTimer(20)}
+            />
+            <OptionButton
+              label="30s"
+              isActive={gameState.voteTimeS === 30}
+              onClick={() => handleSetVoteTimer(30)}
+            />
+            <OptionButton
+              label="40s"
+              isActive={gameState.voteTimeS === 40}
+              onClick={() => handleSetVoteTimer(40)}
+            />
           </div>
         </div>
       </div>
@@ -87,9 +147,23 @@ export default function SelectMissionPanel() {
   );
 }
 
-function OptionButton({ label }: { label: string }) {
+function OptionButton({
+  label,
+  isActive,
+  ...props
+}: {
+  label: string;
+  isActive: boolean;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button className="rounded-md border border-white/20 px-4 py-1.5 text-xs text-white hover:bg-white/10">
+    <button
+      className={`cursor-pointer rounded-md border px-4 py-1.5 text-xs text-white transition-all ${
+        isActive
+          ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
+          : "border-white/10 bg-black/30 hover:border-white/30"
+      }`}
+      {...props}
+    >
       {label}
     </button>
   );
