@@ -26,7 +26,9 @@ export default function BroadcastInput() {
           onClick={handleSend}
           className="rounded-md border border-white/20 px-3 py-1 text-xs text-white hover:bg-white/10"
         >
-          ▶
+          <span className="material-symbols-outlined text-sm text-white">
+            send
+          </span>
         </button>
       </div>
     </div>

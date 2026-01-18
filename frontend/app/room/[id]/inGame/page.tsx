@@ -1,21 +1,32 @@
 "use client";
+import InGameEndTurnEarly from "@/app/components/InGameEndRound";
 import InGameHeaderStatus from "@/app/components/InGameHeader";
 import InGameNavBar from "@/app/components/InGameNavBar";
+import InGamePlayerGrid from "@/app/components/InGamePlayerGrid";
+import InGameSecretCard from "@/app/components/InGameSecretCard";
 import InGameTacticalFeed from "@/app/components/InGameTacticalFeed";
 
 export default function Home() {
   return (
-    <div className="flex h-screen flex-col bg-[rgb(15,21,23)]">
+    <div className="flex min-h-screen flex-col bg-[rgb(15,21,23)]">
       <InGameNavBar />
 
-      <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
-        <main className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <main className="relative flex min-h-0 flex-1 flex-col">
           <InGameHeaderStatus />
 
-          <div className="flex-1 overflow-y-auto px-4 sm:px-6">
-            <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-4">
-              <div className="lg:col-span-3"></div>
-            </div>
+          <div className="min-h-0 flex-1">
+            <InGamePlayerGrid />
+          </div>
+
+          <div className="mt-8 mb-6 flex flex-col items-center gap-4 px-6 lg:hidden">
+            <InGameSecretCard word="BEACH" wordColor="#ffffff" />
+            <InGameEndTurnEarly />
+          </div>
+
+          <div className="hidden items-end justify-between px-6 pb-6 lg:flex">
+            <InGameSecretCard word="BEACH" wordColor="#ffffff" />
+            <InGameEndTurnEarly />
           </div>
         </main>
 
