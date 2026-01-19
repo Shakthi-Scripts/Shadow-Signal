@@ -70,6 +70,7 @@ export default function GamePage() {
   const [gameConfig, setGameConfig] =
     useState<GameConfigType>(defaultGameConfig);
   const [showRoleReveal, setShowRoleReveal] = useState(false);
+  const [showWordReveal, setShowWordReveal] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [selectedVoteTarget, setSelectedVoteTarget] = useState<string | null>(
@@ -81,6 +82,7 @@ export default function GamePage() {
   });
   const [voteTally, setVoteTally] = useState<Record<string, number>>({});
   const [votesRevealed, setVotesRevealed] = useState<boolean>(false);
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const joinRequestedRef = useRef(false);
 
@@ -147,9 +149,30 @@ export default function GamePage() {
     "role:assigned",
     () => {
       setShowRoleReveal(true);
+      // After role reveal is dismissed, show word reveal for 5 seconds
     },
     [],
   );
+
+  // Handle word reveal screen - show when phase is playing but no turn has started (5-second delay)
+  useEffect(() => {
+    if (
+      gameState?.phase === "playing" &&
+      gameState.turn === null &&
+      playerWord &&
+      !showRoleReveal
+    ) {
+      // Show word reveal during the 5-second delay before first turn starts
+      setShowWordReveal(true);
+      const timer = setTimeout(() => {
+        setShowWordReveal(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    } else if (gameState?.turn !== null) {
+      // Turn has started, hide word reveal
+      setShowWordReveal(false);
+    }
+  }, [showRoleReveal, gameState?.phase, gameState?.turn, playerWord]);
 
   // Listen for game state updates
   useSocketEvent<PublicGameState>(
@@ -228,6 +251,14 @@ export default function GamePage() {
   // Handle vote cast
   const handleCastVote = (targetId: string) => {
     if (!socket) return;
+    
+    // Check if current player is eliminated
+    const currentPlayer = gameState?.players[playerId || ""];
+    if (currentPlayer && !currentPlayer.alive) {
+      setError("Eliminated players cannot vote");
+      return;
+    }
+    
     setSelectedVoteTarget(targetId);
     socket.emit(
       "vote:cast",
@@ -245,24 +276,79 @@ export default function GamePage() {
     setShowRoleReveal(false);
   };
 
-  // Timer effect for turn countdown
+  // Timer effect for countdown - updates every second independently but syncs with server state
   useEffect(() => {
-    if (gameState?.phase === "playing" && gameState.turn) {
-      timerIntervalRef.current = setInterval(() => {
-        // Timer updates are handled by server, this is just for UI
-      }, 1000);
+    // Clear any existing interval
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
 
-      return () => {
-        if (timerIntervalRef.current) {
-          clearInterval(timerIntervalRef.current);
-        }
-      };
+    // Calculate initial time remaining from server state
+    if (gameState?.phase === "playing" && gameState.turn) {
+      const initialTime = Math.max(
+        0,
+        Math.floor((gameState.turn.endsAt - Date.now()) / 1000),
+      );
+      setTimeRemaining(initialTime);
+
+      // Set up interval to update every second
+      timerIntervalRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          const newTime = Math.max(0, prev - 1);
+          return newTime;
+        });
+      }, 1000);
+    } else if (gameState?.phase === "voting" && gameState.votes) {
+      const initialTime = Math.max(
+        0,
+        Math.floor((gameState.votes.endsAt - Date.now()) / 1000),
+      );
+      setTimeRemaining(initialTime);
+
+      // Set up interval to update every second
+      timerIntervalRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          const newTime = Math.max(0, prev - 1);
+          return newTime;
+        });
+      }, 1000);
     } else {
+      setTimeRemaining(0);
+    }
+
+    return () => {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.phase, gameState?.turn?.endsAt, gameState?.votes?.endsAt]);
+
+  // Sync timer with server state when it updates (to avoid drift)
+  useEffect(() => {
+    if (gameState?.phase === "playing" && gameState.turn) {
+      const serverTime = Math.max(
+        0,
+        Math.floor((gameState.turn.endsAt - Date.now()) / 1000),
+      );
+      // Only sync if there's a significant difference (more than 1 second) to avoid jitter
+      if (Math.abs(serverTime - timeRemaining) > 1) {
+        setTimeRemaining(serverTime);
+      }
+    } else if (gameState?.phase === "voting" && gameState.votes) {
+      const serverTime = Math.max(
+        0,
+        Math.floor((gameState.votes.endsAt - Date.now()) / 1000),
+      );
+      // Only sync if there's a significant difference (more than 1 second) to avoid jitter
+      if (Math.abs(serverTime - timeRemaining) > 1) {
+        setTimeRemaining(serverTime);
       }
     }
-  }, [gameState?.phase, gameState?.turn]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.turn?.endsAt, gameState?.votes?.endsAt, gameState?.phase]);
 
   if (loading) {
     return (
@@ -339,6 +425,27 @@ export default function GamePage() {
   }
 
   if (gameState.phase === "playing") {
+    // Show word reveal screen for 5 seconds after role reveal
+    if (showWordReveal && playerWord) {
+      return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-[rgb(15,21,23)] px-4">
+          <div className="max-w-2xl text-center">
+            <h1 className="mb-8 text-4xl font-bold tracking-widest text-white sm:text-5xl">
+              YOUR WORD
+            </h1>
+            <div className="mb-8 rounded-lg border-2 border-emerald-400 bg-emerald-950/60 px-8 py-6">
+              <p className="text-3xl font-bold tracking-widest text-emerald-400 sm:text-4xl">
+                {playerWord}
+              </p>
+            </div>
+            <p className="text-sm text-white/60">
+              Game starting in a few seconds...
+            </p>
+          </div>
+        </div>
+      );
+    }
+
     // Show role reveal first if just assigned
     if (showRoleReveal && playerRole && playerWord !== undefined) {
       return (
@@ -392,14 +499,11 @@ export default function GamePage() {
       );
     }
 
-    // Speaking phase
+    // Typing phase
     const currentPlayer = gameState.turn?.currentPlayerId
       ? gameState.players[gameState.turn.currentPlayerId]
       : null;
     const isMyTurn = gameState.turn?.currentPlayerId === playerId;
-    const timeRemaining = gameState.turn
-      ? Math.max(0, Math.floor((gameState.turn.endsAt - Date.now()) / 1000))
-      : 0;
 
     return (
       <div className="flex min-h-screen flex-col bg-[rgb(15,21,23)]">
@@ -414,10 +518,11 @@ export default function GamePage() {
             <div className="min-h-0 flex-1">
               <InGamePlayerGrid
                 players={Object.values(gameState.players).filter(
-                  (p) => p.alive,
+                  (p) => p.connected,
                 )}
                 currentPlayerId={gameState.turn?.currentPlayerId || null}
                 playerId={playerId}
+                eliminatedPlayers={gameState.eliminatedPlayers}
               />
             </div>
             <div className="mt-8 mb-6 flex flex-col items-center gap-4 px-6 lg:hidden">
@@ -450,8 +555,8 @@ export default function GamePage() {
     const alivePlayers = Object.values(gameState.players).filter(
       (p) => p.alive,
     );
-    // Voting timer is managed server-side, we'll use a default for now
-    const timeRemaining = 30; // This would come from gameState if we add it to PublicGameState
+    const currentPlayer = gameState.players[playerId || ""];
+    const currentPlayerAlive = currentPlayer?.alive ?? false;
 
     return (
       <div className="min-h-screen bg-[rgb(15,21,23)]">
@@ -471,6 +576,7 @@ export default function GamePage() {
             playerId={playerId}
             votesRevealed={votesRevealed}
             voteTally={voteTally}
+            currentPlayerAlive={currentPlayerAlive}
           />
           <VotingRightPanel
             votesCast={voteProgress.votesCast}
