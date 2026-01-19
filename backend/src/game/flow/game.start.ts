@@ -1,5 +1,9 @@
 import type { GameState } from "../state/game.state.js";
-import { transitionPhase, incrementRound, addSystemMessage } from "../state/state.transitions.js";
+import {
+  transitionPhase,
+  incrementRound,
+  addSystemMessage,
+} from "../state/state.transitions.js";
 import { assignRoles, applyRolesToState } from "./role.assignment.js";
 import {
   selectWordForInfiltratorMode,
@@ -15,15 +19,15 @@ export interface GameStartConfig {
 }
 
 /**
- * Start the game - assign roles, words, and initialize speaking phase
+ * Start the game - assign roles, words, and initialize typing phase
  */
 export async function startGame(
   state: GameState,
-  config: GameStartConfig
+  config: GameStartConfig,
 ): Promise<void> {
   // Validate minimum players
   const alivePlayers = Array.from(state.players.values()).filter(
-    (p) => p.alive && p.connected
+    (p) => p.alive && p.connected,
   );
 
   if (alivePlayers.length < 3) {
@@ -44,7 +48,7 @@ export async function startGame(
 
   // Select words based on mode
   let words: { citizenWord: string; spyWord?: string };
-  
+
   if (config.mode === "infiltrator") {
     // const citizenWord = selectWordForInfiltratorMode();
     //test
@@ -54,8 +58,8 @@ export async function startGame(
     // const wordPair = await selectWordsForSpyMode();
     const wordPair = {
       agentWord: "",
-      spyWord: ""
-    }
+      spyWord: "",
+    };
     words = {
       citizenWord: wordPair.agentWord,
       spyWord: wordPair.spyWord,
@@ -73,12 +77,16 @@ export async function startGame(
 
   // Start first round
   incrementRound(state);
-  transitionPhase(state, "playing", `Game started! Round ${state.round} begins.`);
+  transitionPhase(
+    state,
+    "playing",
+    `Game started! Round ${state.round} begins.`,
+  );
 
   // Add role assignment messages (without revealing roles)
   addSystemMessage(
     state,
-    `Roles have been assigned. ${alivePlayers.length} players are ready.`
+    `Roles have been assigned. ${alivePlayers.length} players are ready.`,
   );
 }
 

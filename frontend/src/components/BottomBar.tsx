@@ -1,6 +1,25 @@
-import React from "react";
+"use client";
+
+import { useEffect, useState } from "react";
+import api from "@/libs/api";
 
 export default function BottomBar() {
+  const [activeRoomsCount, setActiveRoomsCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchActiveRoomCount = async () => {
+      const result = await api.getActiveRoomCount();
+      if (result.success && result.count !== undefined) {
+        setActiveRoomsCount(result.count);
+      }
+    };
+
+    fetchActiveRoomCount();
+  }, []);
+
+  const displayCount =
+    activeRoomsCount !== null ? activeRoomsCount.toLocaleString() : "---";
+
   return (
     <div className="mx-auto mt-10 max-w-6xl px-6">
       <div className="rounded-lg border border-emerald-400/20 bg-emerald-950/40 px-6 py-3 backdrop-blur-md">
@@ -14,7 +33,7 @@ export default function BottomBar() {
             </span>
             <span>
               ACTIVE SIGNALS:{" "}
-              <span className="text-[rgb(0,209,174)]">1,248</span>
+              <span className="text-[rgb(0,209,174)]">{displayCount}</span>
             </span>
           </div>
 

@@ -24,7 +24,7 @@ export const io = new Server<
 
 io.on("connection", (socket) => {
   onConnection(socket);
-})
+});
 
 server.listen(PORT, () => {
   console.log("Server is listening on", PORT);

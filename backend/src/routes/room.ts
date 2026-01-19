@@ -1,12 +1,16 @@
 import { Router } from "express";
 import { v4 as uuidV4 } from "uuid";
-import { createRoom, getRoomByInviteCode } from "../game/rooms/room.manager.js";
+import {
+  createRoom,
+  getRoomByInviteCode,
+  getAllRooms,
+} from "../game/rooms/room.manager.js";
 
 const roomRouter = Router();
 
 roomRouter.post("/create", (req, res) => {
   try {
-    const { alias } = req.body;
+    const { alias, maxPlayers } = req.body;
 
     // Validate input
     if (!alias || typeof alias !== "string" || alias.trim().length === 0) {
@@ -23,7 +27,21 @@ roomRouter.post("/create", (req, res) => {
       });
     }
 
-    const {inviteCode, playerId} = createRoom(alias.trim());
+    // Validate maxPlayers
+    const maxPlayersNum = maxPlayers ? Number(maxPlayers) : 12;
+    if (
+      isNaN(maxPlayersNum) ||
+      maxPlayersNum < 3 ||
+      maxPlayersNum > 12 ||
+      !Number.isInteger(maxPlayersNum)
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "maxPlayers must be an integer between 3 and 12",
+      });
+    }
+
+    const { inviteCode, playerId } = createRoom(alias.trim(), maxPlayersNum);
 
     res.json({
       success: true,
@@ -86,7 +104,7 @@ roomRouter.post("/join", (req, res) => {
     // Check if alias already exists (case-insensitive)
     const trimmedAlias = alias.trim();
     const aliasExists = Array.from(room.state.players.values()).some(
-      (p) => p.name.trim().toLowerCase() === trimmedAlias.toLowerCase()
+      (p) => p.name.trim().toLowerCase() === trimmedAlias.toLowerCase(),
     );
     if (aliasExists) {
       return res.status(400).json({
@@ -97,9 +115,9 @@ roomRouter.post("/join", (req, res) => {
 
     // Check if room is full
     const alivePlayers = Array.from(room.state.players.values()).filter(
-      (p) => p.alive && p.connected
+      (p) => p.alive && p.connected,
     );
-    if (alivePlayers.length >= 12) {
+    if (alivePlayers.length >= room.state.maxPlayers) {
       return res.status(400).json({
         success: false,
         error: "Room is full",
@@ -120,6 +138,24 @@ roomRouter.post("/join", (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to join room",
+    });
+  }
+});
+
+roomRouter.get("/count", (req, res) => {
+  try {
+    const rooms = getAllRooms();
+    const activeRoomsCount = rooms.length;
+
+    res.json({
+      success: true,
+      count: activeRoomsCount,
+    });
+  } catch (error: any) {
+    console.error("Error getting room count:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to get room count",
     });
   }
 });

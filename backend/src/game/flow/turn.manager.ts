@@ -1,9 +1,12 @@
 import type { GameState } from "../state/game.state.js";
-import { transitionPhase, addSystemMessage } from "../state/state.transitions.js";
+import {
+  transitionPhase,
+  addSystemMessage,
+} from "../state/state.transitions.js";
 import { initializeVoting } from "./voting.manager.js";
 
 /**
- * Start the speaking turn for the current player
+ * Start the typing turn for the current player
  */
 export function startTurn(state: GameState): void {
   if (state.phase !== "playing") {
@@ -49,7 +52,7 @@ export function startTurn(state: GameState): void {
 
   const player = state.players.get(currentPlayerId);
   if (player) {
-    addSystemMessage(state, `${player.name} is now speaking.`);
+    addSystemMessage(state, `${player.name} is now typing.`);
   }
 }
 
@@ -67,7 +70,7 @@ export function endTurnEarly(state: GameState, playerId: string): void {
 
   const player = state.players.get(playerId);
   if (player) {
-    addSystemMessage(state, `${player.name} finished speaking.`);
+    addSystemMessage(state, `${player.name} finished typing.`);
   }
 
   // Move to next player
@@ -113,13 +116,17 @@ export function checkTurnTimer(state: GameState): void {
 }
 
 /**
- * Transition from speaking phase to voting phase
+ * Transition from typing phase to voting phase
  */
 function transitionToVoting(state: GameState): void {
   state.turn = null;
   state.currentTurnIndex = -1;
   initializeVoting(state);
-  transitionPhase(state, "voting", "Speaking phase complete. Voting begins now.");
+  transitionPhase(
+    state,
+    "voting",
+    "Typing phase complete. Voting begins now.",
+  );
 }
 
 /**
@@ -127,6 +134,6 @@ function transitionToVoting(state: GameState): void {
  */
 function getAlivePlayers(state: GameState) {
   return Array.from(state.players.values()).filter(
-    (p) => p.alive && p.connected
+    (p) => p.alive && p.connected,
   );
 }

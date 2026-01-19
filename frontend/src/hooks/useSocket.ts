@@ -6,7 +6,7 @@ import { useGame } from "../contexts/GameContext";
 export function useSocketEvent<T>(
   event: string,
   handler: (data: T) => void,
-  deps: any[] = []
+  deps: any[] = [],
 ) {
   const { socket } = useGame();
 

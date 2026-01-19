@@ -5,10 +5,7 @@ import { v4 as uuidV4 } from "uuid";
 /**
  * Add a system message to the game state
  */
-export function addSystemMessage(
-  state: GameState,
-  content: string
-): void {
+export function addSystemMessage(state: GameState, content: string): void {
   const message: message = {
     id: uuidV4(),
     type: "system",
@@ -16,7 +13,7 @@ export function addSystemMessage(
     content,
     timestamp: new Date().getTime(),
   };
-  
+
   state.messages.push(message);
   state.lastUpdatedAt = new Date().getTime();
   state.version += 1;
@@ -28,7 +25,7 @@ export function addSystemMessage(
 export function transitionPhase(
   state: GameState,
   newPhase: phase,
-  message?: string
+  message?: string,
 ): void {
   state.phase = newPhase;
   state.lastUpdatedAt = new Date().getTime();

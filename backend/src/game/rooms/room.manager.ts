@@ -5,17 +5,17 @@ import { createInitialState } from "../state/state.factory.js";
 const rooms = new Map<string, GameRoom>();
 const inviteCodes = new Map<string, string>();
 
-export function createRoom(alias: string) {
+export function createRoom(alias: string, maxPlayers: number = 12) {
   const roomId = uuidV4();
   const playerId = uuidV4();
   const inviteCode = generateInviteCode();
   inviteCodes.set(inviteCode, roomId);
   const room: GameRoom = {
     id: roomId,
-    state: createInitialState(roomId, playerId, alias, inviteCode),
+    state: createInitialState(roomId, playerId, alias, inviteCode, maxPlayers),
   };
   rooms.set(roomId, room);
-  return {inviteCode, playerId};
+  return { inviteCode, playerId };
 }
 
 export function getRoom(roomId: string) {
@@ -40,9 +40,9 @@ export function deleteRoom(roomId: string) {
 }
 
 function generateInviteCode(length = 5): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   const array = new Uint8Array(length);
   crypto.getRandomValues(array);
-  const inviteCode = Array.from(array, x => chars[x % 36]).join('');
+  const inviteCode = Array.from(array, (x) => chars[x % 36]).join("");
   return inviteCodes.has(inviteCode) ? generateInviteCode() : inviteCode;
 }

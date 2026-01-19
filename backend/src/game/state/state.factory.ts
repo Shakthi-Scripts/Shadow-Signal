@@ -5,7 +5,8 @@ export function createInitialState(
   roomId: string,
   hostPlayerId: string,
   alias: string,
-  inviteCode: string
+  inviteCode: string,
+  maxPlayers: number = 12,
 ): GameState {
   const currentTimestamp = new Date().getTime();
   return {
@@ -15,6 +16,7 @@ export function createInitialState(
     phase: "lobby",
     mode: "infiltrator",
     maxRounds: 6,
+    maxPlayers: maxPlayers,
     round: -1,
     players: new Map([
       [
@@ -48,6 +50,6 @@ export function createInitialState(
     hostId: hostPlayerId,
     roundTimerSeconds: 60,
     voteTimerSeconds: 30,
-    difficulty: "easy"
+    difficulty: "easy",
   };
 }

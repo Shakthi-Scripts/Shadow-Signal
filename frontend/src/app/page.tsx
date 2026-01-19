@@ -8,8 +8,8 @@ import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen w-screen sticky top-0 z-50 border-b border-white/10 bg-[rgb(15,35,32)] backdrop-blur-md items-center">
-      <div className="flex max-w-7xl w-full flex-wrap items-center justify-between gap-y-2 px-3 py-3 sm:px-4 md:flex-nowrap md:gap-y-0">
+    <div className="sticky top-0 z-50 flex min-h-screen w-screen flex-col items-center border-b border-white/10 bg-[rgb(15,35,32)] backdrop-blur-md">
+      <div className="flex w-full max-w-7xl flex-wrap items-center justify-between gap-y-2 px-3 py-3 sm:px-4 md:flex-nowrap md:gap-y-0">
         <h2 className="text-xs font-bold whitespace-nowrap text-[rgb(0,209,174)] sm:text-sm md:text-lg lg:text-xl xl:text-2xl">
           SHADOW SIGNAL
         </h2>

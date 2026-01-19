@@ -17,7 +17,7 @@ export default function VotingChat({
   message,
   setMessage,
 }: VotingChatProps) {
-  const { gameState } = useGame();
+  const { gameState, playerId } = useGame();
 
   const getPlayerName = (playerId: string) => {
     if (gameState?.players[playerId]) {
@@ -25,19 +25,15 @@ export default function VotingChat({
     }
     return playerId.substring(0, 12);
   };
-  const handleSend = () => {
-    if (!message.trim()) return;
-    onSendMessage();
-  };
 
-  const formatTime = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("en-US", {
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+  // Check if chat is allowed (alive players can chat during voting)
+  const currentPlayer = gameState?.players[playerId || ""];
+  const isAlive = currentPlayer?.alive ?? false;
+  const canChat = isAlive && gameState?.phase === "voting";
+
+  const handleSend = () => {
+    if (!message.trim() || !canChat) return;
+    onSendMessage();
   };
 
   const chatMessages = messages.filter((m) => m.type === "chat");
@@ -48,7 +44,7 @@ export default function VotingChat({
           ACCUSATION CHAT
         </p>
 
-        <div className="space-y-4 text-sm leading-relaxed text-white/80 max-h-96 overflow-y-auto">
+        <div className="max-h-96 space-y-4 overflow-y-auto text-sm leading-relaxed text-white/80">
           {chatMessages.length === 0 ? (
             <p className="text-white/40">No messages yet.</p>
           ) : (
@@ -69,23 +65,29 @@ export default function VotingChat({
           <input
             value={message}
             onChange={(e) => setMessage(e.currentTarget.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && canChat) {
                 handleSend();
               }
             }}
-            placeholder="SEND MESSAGE..."
-            className="flex-1 bg-transparent text-sm text-white placeholder-white/40 outline-none"
+            placeholder={
+              canChat
+                ? "SEND MESSAGE..."
+                : "Eliminated players cannot chat"
+            }
+            disabled={!canChat}
+            className="flex-1 bg-transparent text-sm text-white placeholder-white/40 outline-none disabled:cursor-not-allowed disabled:opacity-50"
           />
-          <button onClick={handleSend} disabled={!message.trim()}>
-            <span className="material-symbols-outlined text-sm text-white">
+          <button onClick={handleSend} disabled={!message.trim() || !canChat}>
+            <span className="material-symbols-outlined text-sm text-white disabled:opacity-50">
               send
             </span>
           </button>
         </div>
         <p className="mt-4 text-xs leading-relaxed text-white/40">
-          Select one player to <span className="italic">&quot;Flag as Anomaly&quot;</span>
-          . If the majority agrees, their signal will be severed permanently.
+          Select one player to{" "}
+          <span className="italic">&quot;Flag as Anomaly&quot;</span>. If the
+          majority agrees, their signal will be severed permanently.
         </p>
       </div>
     </aside>

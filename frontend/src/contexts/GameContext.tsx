@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { Socket } from "socket.io-client";
 import { createSocket, getSocket, disconnectSocket } from "../libs/socket";
 import type { PublicGameState } from "../types/game";
@@ -25,7 +31,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [gameState, setGameState] = useState<PublicGameState | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
-  const [playerRole, setPlayerRole] = useState<"citizen" | "infiltrator" | "agent" | "spy" | null>(null);
+  const [playerRole, setPlayerRole] = useState<
+    "citizen" | "infiltrator" | "agent" | "spy" | null
+  >(null);
   const [playerWord, setPlayerWord] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,10 +73,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setGameState(state);
     });
 
-    sock.on("role:assigned", (payload: { role: "citizen" | "infiltrator" | "agent" | "spy"; word: string | null }) => {
-      setPlayerRole(payload.role);
-      setPlayerWord(payload.word);
-    });
+    sock.on(
+      "role:assigned",
+      (payload: {
+        role: "citizen" | "infiltrator" | "agent" | "spy";
+        word: string | null;
+      }) => {
+        setPlayerRole(payload.role);
+        setPlayerWord(payload.word);
+      },
+    );
   };
 
   const disconnect = () => {

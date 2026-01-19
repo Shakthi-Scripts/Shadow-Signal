@@ -29,7 +29,9 @@ export default function InGameHeader({
           </span>
         </div>
 
-        <span className="text-xl font-bold text-emerald-400 sm:text-2xl">:</span>
+        <span className="text-xl font-bold text-emerald-400 sm:text-2xl">
+          :
+        </span>
 
         <div className="flex flex-col items-center rounded-md border border-emerald-500/30 bg-emerald-950/60 px-3 py-2 sm:px-4">
           <span className="text-xl font-bold tracking-widest text-white sm:text-2xl">
@@ -42,7 +44,7 @@ export default function InGameHeader({
       </div>
 
       <p className="max-w-full text-sm font-bold tracking-wide text-white uppercase sm:text-base sm:tracking-[0.35em]">
-        CURRENTLY TRANSMITTING:
+        CURRENTLY TYPING:
         <span className="mt-1 block font-bold tracking-widest text-emerald-400 sm:ml-2 sm:inline">
           {currentPlayer || "WAITING..."}
         </span>

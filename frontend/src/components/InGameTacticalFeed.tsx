@@ -16,10 +16,18 @@ export default function InGameTacticalFeed({
   message,
   setMessage,
 }: InGameTacticalFeedProps) {
-  const { gameState } = useGame();
+  const { gameState, playerId } = useGame();
+
+  // Check if chat is allowed
+  const currentPlayer = gameState?.players[playerId || ""];
+  const isAlive = currentPlayer?.alive ?? false;
+  const isMyTurn =
+    gameState?.phase === "playing" &&
+    gameState?.turn?.currentPlayerId === playerId;
+  const canChat = isAlive && isMyTurn;
 
   const handleSend = () => {
-    if (message.trim().length === 0) return;
+    if (message.trim().length === 0 || !canChat) return;
     onSendMessage();
   };
 
@@ -59,7 +67,8 @@ export default function InGameTacticalFeed({
                   <span className="mr-2 text-xs text-white/30">
                     {formatTime(msg.timestamp)}
                   </span>
-                  <span className="text-emerald-400">SYSTEM:</span> {msg.content}
+                  <span className="text-emerald-400">SYSTEM:</span>{" "}
+                  {msg.content}
                 </p>
               );
             } else {
@@ -81,11 +90,18 @@ export default function InGameTacticalFeed({
           <input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="SEND TRANSMISSION..."
-            className="flex-1 bg-transparent text-sm text-white placeholder-white/40 outline-none"
+            placeholder={
+              canChat
+                ? "SEND TRANSMISSION..."
+                : isAlive
+                  ? "Wait for your turn to chat..."
+                  : "Eliminated players cannot chat"
+            }
+            disabled={!canChat}
+            className="flex-1 bg-transparent text-sm text-white placeholder-white/40 outline-none disabled:cursor-not-allowed disabled:opacity-50"
           />
-          <button onClick={handleSend}>
-            <span className="material-symbols-outlined text-sm text-white">
+          <button onClick={handleSend} disabled={!canChat}>
+            <span className="material-symbols-outlined text-sm text-white disabled:opacity-50">
               send
             </span>
           </button>
