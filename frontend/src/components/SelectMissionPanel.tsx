@@ -26,6 +26,7 @@ export default function SelectMissionPanel({
   isHost = false,
   onConfigUpdate,
 }: SelectMissionPanelProps) {
+  const { gameState } = useGame();
   const handleSetMode = (mode: mode) => {
     const newConfig = { ...gameConfig, mode };
     setGameState(newConfig);
@@ -69,14 +70,12 @@ export default function SelectMissionPanel({
     }
   };
 
-  const { gameState } = useGame();
   const connectedPlayersCount = gameState
     ? Object.values(gameState.players).filter((p) => p.connected).length
     : 0;
   const maxPlayersExceeded = Boolean(
     gameState && connectedPlayersCount > gameConfig.maxPlayers,
   );
-
   return (
     <main className="mt-6 h-full w-full flex-1 overflow-y-auto bg-black/20 p-6 lg:w-[56%]">
       <header className="mb-6">
