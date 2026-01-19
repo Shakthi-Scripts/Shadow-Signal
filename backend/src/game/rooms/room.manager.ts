@@ -31,11 +31,10 @@ export function getAllRooms(): GameRoom[] {
   return Array.from(rooms.values());
 }
 
-function generateInviteCode(): string {
-  const inviteCode = (uuidV4().slice(0, 3) + Date.now().toString(36))
-    .replace(/[^A-Za-z0-9]/gi, "")
-    .toUpperCase()
-    .slice(0, 5);
-
+function generateInviteCode(length = 5): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+  const inviteCode = Array.from(array, x => chars[x % 36]).join('');
   return inviteCodes.has(inviteCode) ? generateInviteCode() : inviteCode;
 }
