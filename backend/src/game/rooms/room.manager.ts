@@ -5,8 +5,9 @@ import { createInitialState } from "../state/state.factory.js";
 const rooms = new Map<string, GameRoom>();
 const inviteCodes = new Map<string, string>();
 
-export function createRoom(playerId: string, alias: string): GameRoom {
+export function createRoom(alias: string) {
   const roomId = uuidV4();
+  const playerId = uuidV4();
   const inviteCode = generateInviteCode();
   inviteCodes.set(inviteCode, roomId);
   const room: GameRoom = {
@@ -14,7 +15,7 @@ export function createRoom(playerId: string, alias: string): GameRoom {
     state: createInitialState(roomId, playerId, alias, inviteCode),
   };
   rooms.set(roomId, room);
-  return room;
+  return {inviteCode, playerId};
 }
 
 export function getRoom(roomId: string) {
@@ -26,9 +27,13 @@ export function getRoomByInviteCode(inviteCode: string) {
   return roomId ? rooms.get(roomId) : undefined;
 }
 
+export function getAllRooms(): GameRoom[] {
+  return Array.from(rooms.values());
+}
+
 function generateInviteCode(): string {
   const inviteCode = (uuidV4().slice(0, 3) + Date.now().toString(36))
-    .replace(/[^A-Z]/gi, "")
+    .replace(/[^A-Za-z0-9]/gi, "")
     .toUpperCase()
     .slice(0, 5);
 
