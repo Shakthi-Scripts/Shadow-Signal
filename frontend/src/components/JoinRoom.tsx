@@ -1,22 +1,64 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import api from "../libs/api";
 
 export default function JoinRoom() {
-  const [accessCode, setAccessCode] = useState<string>("");
+  const [accessCode, setAccessCode] = useState<string[]>(["", "", "", "", ""]);
   const [alias, setAlias] = useState<string>("");
   const [aliasError, setAliasError] = useState<string>("");
+  const [accessCodeError, setAccessCodeError] = useState<string>("");
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const handleAccessCodeChange = (index: number, value: string) => {
+    const letter = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 1);
+    
+    const newCode = [...accessCode];
+    newCode[index] = letter;
+    setAccessCode(newCode);
+    setAccessCodeError("");
+
+    if (letter && index < 4) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleAccessCodeKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !accessCode[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleAccessCodePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData("text").replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 5);
+    const newCode = ["", "", "", "", ""];
+    for (let i = 0; i < pastedText.length && i < 5; i++) {
+      newCode[i] = pastedText[i];
+    }
+    setAccessCode(newCode);
+    setAccessCodeError("");
+    const nextEmptyIndex = newCode.findIndex((char) => !char);
+    const focusIndex = nextEmptyIndex === -1 ? 4 : nextEmptyIndex;
+    inputRefs.current[focusIndex]?.focus();
+  };
 
   const handleJoinRoom = async () => {
-    if (accessCode?.length === 0 || alias?.length === 0) return;
+    const codeString = accessCode.join("");
+    if (codeString.length !== 5 || alias.length === 0) {
+      if (codeString.length !== 5) {
+        setAccessCodeError("Access code must be exactly 5 letters");
+      }
+      return;
+    }
     if (alias.length >= 20) {
       setAliasError("Alias must be less than 20 characters");
       return;
     }
     setAliasError("");
+    setAccessCodeError("");
     try {
-      const result = await api.joinRoom(accessCode, alias);
+      const result = await api.joinRoom(codeString, alias);
       if (result.success && result.inviteCode && result.playerId) {
         localStorage.setItem("playerAlias", alias);
         localStorage.setItem("playerId", result.playerId)
@@ -50,12 +92,27 @@ export default function JoinRoom() {
             <label className="mb-2 block text-xs tracking-widest text-[rgb(0,209,174)]">
               ACCESS CODE
             </label>
-            <input
-              onInput={(e) => setAccessCode(e.currentTarget.value)}
-              type="text"
-              placeholder="e.g. XJ-99"
-              className="w-full rounded-md border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-white/30 focus:border-emerald-400/60 focus:outline-none"
-            />
+            <div className="flex gap-2">
+              {accessCode.map((char, index) => (
+                <input
+                  key={index}
+                  ref={(el) => {
+                    inputRefs.current[index] = el;
+                  }}
+                  value={char}
+                  onInput={(e) => handleAccessCodeChange(index, e.currentTarget.value)}
+                  onKeyDown={(e) => handleAccessCodeKeyDown(index, e)}
+                  onPaste={handleAccessCodePaste}
+                  type="text"
+                  maxLength={1}
+                  className="w-12 rounded-md border border-white/10 bg-black/30 px-3 py-3 text-center text-lg font-semibold uppercase text-white placeholder-white/30 focus:border-emerald-400/60 focus:outline-none"
+                  placeholder="-"
+                />
+              ))}
+            </div>
+            {accessCodeError && (
+              <p className="mt-1 text-xs text-red-400">{accessCodeError}</p>
+            )}
           </div>
 
           <div>
@@ -85,7 +142,7 @@ export default function JoinRoom() {
         <div className="mt-8 flex items-center gap-4">
           <button
             onClick={handleJoinRoom}
-            disabled={alias.length === 0 || alias.length >= 20 || accessCode.length === 0}
+            disabled={alias.length === 0 || alias.length >= 20 || accessCode.join("").length !== 5}
             className="rounded-md bg-[rgb(0,209,174)] px-6 py-3 text-sm font-semibold tracking-widest text-black transition hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             JOIN ROOM
