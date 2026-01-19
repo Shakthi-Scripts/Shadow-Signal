@@ -151,4 +151,87 @@ export function registerRoomEvents(socket: SocketType) {
     const publicState = serializeGameState(room.state, socket.data.playerId);
     io.to(roomId).emit("room:state", publicState);
   });
+
+  socket.on("room:transfer-host", ({ newHostId }, ack) => {
+    try {
+      const roomId = socket.data.roomId;
+      if (!roomId) {
+        ack?.({ success: false, reason: "Not in a room" });
+        socket.emit("error", { message: "Not in a room" });
+        return;
+      }
+
+      const room = getRoom(roomId);
+      if (!room) {
+        ack?.({ success: false, reason: "Room not found" });
+        socket.emit("error", { message: "Room not found" });
+        return;
+      }
+
+      // Check if player is current host
+      if (room.state.hostPlayerId !== socket.data.playerId) {
+        ack?.({
+          success: false,
+          reason: "Only the host can transfer host privileges",
+        });
+        socket.emit("error", {
+          message: "Only the host can transfer host privileges",
+        });
+        return;
+      }
+
+      // Check if game is in lobby (only allow host transfer in lobby)
+      if (room.state.phase !== "lobby") {
+        ack?.({
+          success: false,
+          reason: "Host can only be transferred in lobby",
+        });
+        socket.emit("error", {
+          message: "Host can only be transferred in lobby",
+        });
+        return;
+      }
+
+      // Check if new host exists and is connected
+      const newHost = room.state.players.get(newHostId);
+      if (!newHost) {
+        ack?.({ success: false, reason: "Player not found" });
+        socket.emit("error", { message: "Player not found" });
+        return;
+      }
+
+      if (!newHost.connected) {
+        ack?.({ success: false, reason: "Player is not connected" });
+        socket.emit("error", { message: "Player is not connected" });
+        return;
+      }
+
+      // Check if trying to transfer to self
+      if (newHostId === socket.data.playerId) {
+        ack?.({ success: false, reason: "Cannot transfer host to yourself" });
+        socket.emit("error", { message: "Cannot transfer host to yourself" });
+        return;
+      }
+
+      // Transfer host
+      const oldHost = room.state.players.get(room.state.hostPlayerId);
+      room.state.hostPlayerId = newHostId;
+      room.state.hostId = newHostId; // Also update hostId field for consistency
+
+      addSystemMessage(
+        room.state,
+        `${oldHost?.name || "Host"} transferred host privileges to ${newHost.name}.`,
+      );
+
+      // Broadcast updated state to all players
+      const publicState = serializeGameState(room.state, socket.data.playerId);
+      io.to(roomId).emit("room:state", publicState);
+
+      ack?.({ success: true });
+    } catch (error) {
+      console.error("Error transferring host:", error);
+      ack?.({ success: false, reason: "Internal server error" });
+      socket.emit("error", { message: "Failed to transfer host" });
+    }
+  });
 }

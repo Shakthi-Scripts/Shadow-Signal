@@ -6,6 +6,10 @@ export interface ClientToServerEvents {
     ack: (response: { success: boolean; reason?: string }) => void,
   ) => void;
   "room:leave": () => void;
+  "room:transfer-host": (
+    payload: { newHostId: string },
+    ack?: (response: { success: boolean; reason?: string }) => void,
+  ) => void;
 
   "game:start": (payload?: {
     mode?: "infiltrator" | "spy";
