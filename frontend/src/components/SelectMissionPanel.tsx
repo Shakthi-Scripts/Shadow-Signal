@@ -3,17 +3,20 @@ import { Dispatch, SetStateAction } from "react";
 import {
   difficulty,
   GameConfigType,
+  maxRounds,
   mode,
   roundTimerS,
   voteTimeS,
 } from "@/app/game/[inviteCode]/page";
 import { useGame } from "@/contexts/GameContext";
+import { cn } from "@/lib/utils";
 
 type SelectMissionPanelProps = {
   gameConfig: GameConfigType;
   setGameState: Dispatch<SetStateAction<GameConfigType>>;
   onStartGame?: () => void;
   isHost?: boolean;
+  onConfigUpdate?: (config: GameConfigType) => void;
 };
 
 export default function SelectMissionPanel({
@@ -21,15 +24,43 @@ export default function SelectMissionPanel({
   setGameState,
   onStartGame,
   isHost = false,
+  onConfigUpdate,
 }: SelectMissionPanelProps) {
-  const handleSetMode = (mode: mode) =>
-    setGameState((prev) => ({ ...prev, mode }));
-  const handleSetDifficulty = (difficulty: difficulty) =>
-    setGameState((prev) => ({ ...prev, difficulty }));
-  const handleSetRoundTimer = (roundTimerS: roundTimerS) =>
-    setGameState((prev) => ({ ...prev, roundTimerS }));
-  const handleSetVoteTimer = (voteTimeS: voteTimeS) =>
-    setGameState((prev) => ({ ...prev, voteTimeS }));
+  const handleSetMode = (mode: mode) => {
+    const newConfig = { ...gameConfig, mode };
+    setGameState(newConfig);
+    if (isHost && onConfigUpdate) {
+      onConfigUpdate(newConfig);
+    }
+  };
+  const handleSetDifficulty = (difficulty: difficulty) => {
+    const newConfig = { ...gameConfig, difficulty };
+    setGameState(newConfig);
+    if (isHost && onConfigUpdate) {
+      onConfigUpdate(newConfig);
+    }
+  };
+  const handleSetRoundTimer = (roundTimerS: roundTimerS) => {
+    const newConfig = { ...gameConfig, roundTimerS };
+    setGameState(newConfig);
+    if (isHost && onConfigUpdate) {
+      onConfigUpdate(newConfig);
+    }
+  };
+  const handleSetVoteTimer = (voteTimeS: voteTimeS) => {
+    const newConfig = { ...gameConfig, voteTimeS };
+    setGameState(newConfig);
+    if (isHost && onConfigUpdate) {
+      onConfigUpdate(newConfig);
+    }
+  };
+  const handleSetMaxRounds = (maxRounds: maxRounds) => {
+    const newConfig = { ...gameConfig, maxRounds };
+    setGameState(newConfig);
+    if (isHost && onConfigUpdate) {
+      onConfigUpdate(newConfig);
+    }
+  };
 
   const { gameState } = useGame()
 
@@ -46,12 +77,14 @@ export default function SelectMissionPanel({
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div
-          onClick={() => handleSetMode("infiltrator")}
-          className={`cursor-pointer rounded-md border p-6 transition-all ${
+          onClick={isHost ? () => handleSetMode("infiltrator") : undefined}
+          className={cn(
+            "rounded-md border p-6 transition-all cursor-pointer",
+            !isHost && "cursor-not-allowed border-white/10 bg-black/30",
             gameConfig.mode === "infiltrator"
               ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
               : "border-white/10 bg-black/30 hover:border-white/30"
-          }`}
+          )}
         >
           <h3 className="mb-3 text-sm font-semibold text-white">
             INFILTRATOR MODE
@@ -64,12 +97,14 @@ export default function SelectMissionPanel({
         </div>
 
         <div
-          onClick={() => handleSetMode("spy")}
-          className={`cursor-pointer rounded-md border p-6 transition-all ${
+          onClick={isHost ? () => handleSetMode("spy") : undefined}
+          className={cn(
+            "rounded-md border p-6 transition-all cursor-pointer",
+            !isHost && "cursor-not-allowed border-white/10 bg-black/30",
             gameConfig.mode === "spy"
               ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
               : "border-white/10 bg-black/30 hover:border-white/30"
-          }`}
+          )}
         >
           <h3 className="mb-3 text-sm font-semibold text-white">SPY MODE</h3>
           <ul className="space-y-1 text-xs text-white/70">
@@ -88,16 +123,19 @@ export default function SelectMissionPanel({
               label="60s"
               isActive={gameConfig.roundTimerS === 60}
               onClick={() => handleSetRoundTimer(60)}
+              disabled={!isHost}
             />
             <OptionButton
               label="90s"
               isActive={gameConfig.roundTimerS === 90}
               onClick={() => handleSetRoundTimer(90)}
+              disabled={!isHost}
             />
             <OptionButton
               label="120s"
               isActive={gameConfig.roundTimerS === 120}
               onClick={() => handleSetRoundTimer(120)}
+              disabled={!isHost}
             />
           </div>
         </div>
@@ -109,11 +147,13 @@ export default function SelectMissionPanel({
               label="Easy"
               isActive={gameConfig.difficulty === "easy"}
               onClick={() => handleSetDifficulty("easy")}
+              disabled={!isHost}
             />
             <OptionButton
               label="Hard"
               isActive={gameConfig.difficulty === "hard"}
               onClick={() => handleSetDifficulty("hard")}
+              disabled={!isHost}
             />
           </div>
         </div>
@@ -125,17 +165,35 @@ export default function SelectMissionPanel({
               label="20s"
               isActive={gameConfig.voteTimeS === 20}
               onClick={() => handleSetVoteTimer(20)}
+              disabled={!isHost}
             />
             <OptionButton
               label="30s"
               isActive={gameConfig.voteTimeS === 30}
               onClick={() => handleSetVoteTimer(30)}
+              disabled={!isHost}
             />
             <OptionButton
               label="40s"
               isActive={gameConfig.voteTimeS === 40}
               onClick={() => handleSetVoteTimer(40)}
+              disabled={!isHost}
             />
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-2 text-xs text-white/60">MAX ROUNDS</p>
+          <div className="flex flex-wrap gap-2">
+            {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((rounds) => (
+              <OptionButton
+                key={rounds}
+                label={rounds.toString()}
+                isActive={gameConfig.maxRounds === rounds}
+                onClick={() => handleSetMaxRounds(rounds as maxRounds)}
+                disabled={!isHost}
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -149,7 +207,10 @@ export default function SelectMissionPanel({
         <button
           onClick={onStartGame}
           disabled={!isHost || !onStartGame || gameState?.players && Object.keys(gameState.players).length < 3 }
-          className="rounded-md bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed"
+          className={cn(
+            "rounded-md bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400",
+            "disabled:opacity-30 disabled:cursor-not-allowed"
+          )}
         >
           START GAME
         </button>
@@ -161,18 +222,23 @@ export default function SelectMissionPanel({
 function OptionButton({
   label,
   isActive,
+  disabled,
   ...props
 }: {
   label: string;
   isActive: boolean;
+  disabled?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={`cursor-pointer rounded-md border px-4 py-1.5 text-xs text-white transition-all ${
+      disabled={disabled}
+      className={cn(
+        "rounded-md border px-4 py-1.5 text-xs text-white transition-all cursor-pointer",
+        disabled && "cursor-not-allowed border-white/10 bg-black/30",
         isActive
           ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
           : "border-white/10 bg-black/30 hover:border-white/30"
-      }`}
+      )}
       {...props}
     >
       {label}

@@ -4,7 +4,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useSocketEvent } from "@/hooks/useSocket";
-import api from "@/libs/api";
 import { getSocket } from "@/libs/socket";
 import LobbyNavBar from "@/components/LobbyNavBar";
 import LobbyLeftPanel from "@/components/LobbyLeftPanel";
@@ -33,12 +32,14 @@ export type mode = "infiltrator" | "spy";
 export type difficulty = "easy" | "hard";
 export type roundTimerS = 60 | 90 | 120;
 export type voteTimeS = 20 | 30 | 40;
+export type maxRounds = 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 export interface GameConfigType {
   mode: mode;
   roundTimerS: roundTimerS;
   difficulty: difficulty;
   voteTimeS: voteTimeS;
+  maxRounds: maxRounds;
 }
 
 const defaultGameConfig: GameConfigType = {
@@ -46,6 +47,7 @@ const defaultGameConfig: GameConfigType = {
   roundTimerS: 60,
   difficulty: "easy",
   voteTimeS: 30,
+  maxRounds: 6,
 };
 
 export default function GamePage() {
@@ -138,10 +140,20 @@ export default function GamePage() {
 
   // Listen for game state updates
   useSocketEvent<PublicGameState>("room:state", (state) => {
-    // Update game config if host
-    if (state.phase === "lobby" && gameState?.phase !== "lobby") {
-      // Reset role reveal when returning to lobby
-      setShowRoleReveal(false);
+    // Update game config from server state when in lobby
+    if (state.phase === "lobby") {
+      if (gameState?.phase !== "lobby") {
+        // Reset role reveal when returning to lobby
+        setShowRoleReveal(false);
+      }
+      // Sync config from server state (merge with existing to handle optional fields)
+      setGameConfig((prev) => ({
+        mode: state.mode ?? prev.mode,
+        difficulty: state.difficulty ?? prev.difficulty,
+        roundTimerS: (state.roundTimerSeconds as roundTimerS) ?? prev.roundTimerS,
+        voteTimeS: (state.voteTimerSeconds as voteTimeS) ?? prev.voteTimeS,
+        maxRounds: (state.maxRounds as maxRounds) ?? prev.maxRounds,
+      }));
     }
     if (state.phase === "voting") {
       setVotesRevealed(false);
@@ -177,6 +189,7 @@ export default function GamePage() {
       difficulty: gameConfig.difficulty,
       roundTimerSeconds: gameConfig.roundTimerS,
       voteTimerSeconds: gameConfig.voteTimeS,
+      maxRounds: gameConfig.maxRounds,
     });
   };
 
@@ -284,6 +297,16 @@ export default function GamePage() {
             isHost={Boolean(
               gameState.hostPlayerId === playerId
             )}
+            onConfigUpdate={(config) => {
+              if (!socket) return;
+              socket.emit("game:config:update", {
+                mode: config.mode,
+                difficulty: config.difficulty,
+                roundTimerSeconds: config.roundTimerS,
+                voteTimerSeconds: config.voteTimeS,
+                maxRounds: config.maxRounds,
+              });
+            }}
           />
           <LobbySystemLog />
         </div>
