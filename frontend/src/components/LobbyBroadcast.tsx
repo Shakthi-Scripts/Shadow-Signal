@@ -1,14 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
+import { useGame } from "@/contexts/GameContext";
 
 export default function BroadcastInput() {
   const [message, setMessage] = useState("");
+  const { socket } = useGame();
 
   const handleSend = () => {
-    if (!message.trim()) return;
-    console.log("Broadcast:", message);
+    if (!message.trim() || !socket) return;
+    socket.emit("chat:send", { content: message });
     setMessage("");
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSend();
+    }
   };
 
   return (
@@ -18,6 +26,7 @@ export default function BroadcastInput() {
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyPress}
           placeholder="BROADCAST..."
           className="flex-1 bg-transparent text-sm text-white placeholder-white/40 outline-none"
         />
