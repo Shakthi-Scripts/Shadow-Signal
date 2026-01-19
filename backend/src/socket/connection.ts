@@ -38,10 +38,10 @@ export function onConnection(socket: SocketType) {
         const player = room.state.players.get(socket.data.playerId);
         if (player) {
           player.connected = false;
-          addSystemMessage(room.state, `${player.name.trim()} left the room.`);
 
           // If in lobby, remove player
           if (room.state.phase === "lobby") {
+            addSystemMessage(room.state, `${player.name.trim()} left the room.`);
             room.state.players.delete(socket.data.playerId);
             // If this was the only player in the room, schedule room deletion after 1 minute
             if (room.state.players.size === 0) {
@@ -59,6 +59,29 @@ export function onConnection(socket: SocketType) {
                 }
               }, 60000); // 1 minute = 60000ms
             }
+          } else if (
+            (room.state.phase === "playing" || room.state.phase === "voting") &&
+            player.alive
+          ) {
+            // During game, mark as eliminated if still alive
+            player.alive = false;
+
+            // Record elimination
+            if (!room.state.eliminatedPlayers) {
+              room.state.eliminatedPlayers = {};
+            }
+            room.state.eliminatedPlayers[socket.data.playerId] = {
+              playerId: socket.data.playerId,
+              round: room.state.round,
+              reason: "disconnection",
+            };
+
+            addSystemMessage(
+              room.state,
+              `${player.name.trim()} disconnected and has been eliminated.`,
+            );
+          } else {
+            addSystemMessage(room.state, `${player.name.trim()} disconnected.`);
           }
 
           // If the player is the host, find a new host
@@ -98,9 +121,13 @@ export function startGameLoop() {
         const publicState = serializeGameState(room.state, "");
         io.to(room.id).emit("room:state", publicState);
       } else if (room.state.phase === "voting") {
-        const shouldProcessElimination = checkVotingTimer(room.state);
-        if (shouldProcessElimination) {
-          processElimination(room.state);
+        const stateUpdated = checkVotingTimer(room.state);
+        if (stateUpdated) {
+          // State was updated (votes revealed and elimination processed)
+          const publicState = serializeGameState(room.state, "");
+          io.to(room.id).emit("room:state", publicState);
+        } else {
+          // Just emit state update for timer sync
           const publicState = serializeGameState(room.state, "");
           io.to(room.id).emit("room:state", publicState);
         }
