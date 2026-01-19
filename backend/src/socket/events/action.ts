@@ -80,11 +80,22 @@ export function registerActionEvents(socket: SocketType) {
         });
       });
 
-      // Start first turn
-      startTurn(room.state);
+      // Broadcast initial state (before word reveal)
+      const initialState = serializeGameState(room.state, socket.data.playerId);
+      io.to(roomId).emit("room:state", initialState);
 
-      const updatedState = serializeGameState(room.state, socket.data.playerId);
-      io.to(roomId).emit("room:state", updatedState);
+      // Wait 5 seconds for word reveal, then start first turn
+      setTimeout(() => {
+        const currentRoom = getRoom(roomId);
+        if (currentRoom && currentRoom.state.phase === "playing") {
+          startTurn(currentRoom.state);
+          const updatedState = serializeGameState(
+            currentRoom.state,
+            socket.data.playerId,
+          );
+          io.to(roomId).emit("room:state", updatedState);
+        }
+      }, 5000);
     } catch (error: any) {
       console.error("Error starting game:", error);
       socket.emit("error", {
@@ -146,6 +157,34 @@ export function registerActionEvents(socket: SocketType) {
       const player = room.state.players.get(socket.data.playerId);
       if (!player) {
         return;
+      }
+
+      // Check if player is eliminated
+      if (!player.alive) {
+        socket.emit("error", {
+          message: "Eliminated players cannot send messages",
+        });
+        return;
+      }
+
+      // Check chat restrictions based on phase
+      if (room.state.phase === "playing") {
+        // In playing phase, only allow chat on player's turn
+        if (
+          !room.state.turn ||
+          room.state.turn.currentPlayerId !== socket.data.playerId
+        ) {
+          socket.emit("error", {
+            message: "You can only chat during your turn",
+          });
+          return;
+        }
+      } else if (room.state.phase === "voting") {
+        // Allow chat during voting phase
+        // No additional checks needed
+      } else {
+        // No chat restrictions in lobby or ended phase
+        // Allow chat in lobby and ended phase
       }
 
       // Add message
