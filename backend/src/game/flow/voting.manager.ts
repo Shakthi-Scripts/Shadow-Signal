@@ -1,5 +1,8 @@
 import type { GameState } from "../state/game.state.js";
-import { transitionPhase, addSystemMessage } from "../state/state.transitions.js";
+import {
+  transitionPhase,
+  addSystemMessage,
+} from "../state/state.transitions.js";
 import { processElimination } from "./elimination.logic.js";
 
 /**
@@ -7,7 +10,7 @@ import { processElimination } from "./elimination.logic.js";
  */
 export function initializeVoting(state: GameState): void {
   const alivePlayers = getAlivePlayers(state);
-  
+
   if (alivePlayers.length < 2) {
     // Not enough players to vote
     return;
@@ -39,7 +42,7 @@ export function initializeVoting(state: GameState): void {
 export function castVote(
   state: GameState,
   voterId: string,
-  targetId: string
+  targetId: string,
 ): boolean {
   if (state.phase !== "voting" || !state.votes) {
     return false;
@@ -119,7 +122,7 @@ export function checkVotingTimer(state: GameState): boolean {
     revealVotes(state);
     return true; // Indicates elimination should be processed
   }
-  
+
   return false;
 }
 
@@ -140,6 +143,6 @@ export function completeVoting(state: GameState): void {
  */
 function getAlivePlayers(state: GameState) {
   return Array.from(state.players.values()).filter(
-    (p) => p.alive && p.connected
+    (p) => p.alive && p.connected,
   );
 }

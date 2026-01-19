@@ -65,12 +65,18 @@ export default function GamePage() {
   } = useGame();
 
   const [loading, setLoading] = useState(true);
-  const [gameConfig, setGameConfig] = useState<GameConfigType>(defaultGameConfig);
+  const [gameConfig, setGameConfig] =
+    useState<GameConfigType>(defaultGameConfig);
   const [showRoleReveal, setShowRoleReveal] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
-  const [selectedVoteTarget, setSelectedVoteTarget] = useState<string | null>(null);
-  const [voteProgress, setVoteProgress] = useState({ votesCast: 0, totalPlayers: 0 });
+  const [selectedVoteTarget, setSelectedVoteTarget] = useState<string | null>(
+    null,
+  );
+  const [voteProgress, setVoteProgress] = useState({
+    votesCast: 0,
+    totalPlayers: 0,
+  });
   const [voteTally, setVoteTally] = useState<Record<string, number>>({});
   const [votesRevealed, setVotesRevealed] = useState<boolean>(false);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -86,20 +92,21 @@ export default function GamePage() {
         setLoading(true);
         // For now, we'll use a stored alias or prompt for it
         // In a real app, you'd get this from localStorage or user input
-        const storedAlias = localStorage.getItem("playerAlias") || `Player_${Math.random().toString(36).substr(2, 5)}`;
-        const storedPlayerId = localStorage.getItem("playerId")
-        
-        
+        const storedAlias =
+          localStorage.getItem("playerAlias") ||
+          `Player_${Math.random().toString(36).substr(2, 5)}`;
+        const storedPlayerId = localStorage.getItem("playerId");
+
         if (storedAlias && storedPlayerId) {
           connectSocket(storedPlayerId);
 
           // Join room via socket
-            const currentSocket = getSocket();
-            if (currentSocket) {
-              currentSocket.emit(
-                "room:join",
-                { inviteCode, alias: storedAlias, playerId: storedPlayerId },
-                (response: { success: boolean; reason?: string }) => {
+          const currentSocket = getSocket();
+          if (currentSocket) {
+            currentSocket.emit(
+              "room:join",
+              { inviteCode, alias: storedAlias, playerId: storedPlayerId },
+              (response: { success: boolean; reason?: string }) => {
                 if (response.success) {
                   setHasJoined(true);
                   setLoading(false);
@@ -107,16 +114,17 @@ export default function GamePage() {
                   setError(response.reason || "Failed to join room");
                   setLoading(false);
                 }
-                }
-              );
-            } else {
-              setError("Failed to establish socket connection");
-              setLoading(false);
-            }
+              },
+            );
+          } else {
+            setError("Failed to establish socket connection");
+            setLoading(false);
+          }
         }
       } catch (err) {
         console.error("Error joining room:", err);
-        const message = err instanceof Error ? err.message : "Failed to join room";
+        const message =
+          err instanceof Error ? err.message : "Failed to join room";
         setError(message);
         setLoading(false);
       } finally {
@@ -130,35 +138,43 @@ export default function GamePage() {
   }, [inviteCode, hasJoined, setError]);
 
   // Listen for role assignment
-  useSocketEvent<{ role: "citizen" | "infiltrator" | "agent" | "spy"; word: string | null }>(
+  useSocketEvent<{
+    role: "citizen" | "infiltrator" | "agent" | "spy";
+    word: string | null;
+  }>(
     "role:assigned",
     () => {
       setShowRoleReveal(true);
     },
-    []
+    [],
   );
 
   // Listen for game state updates
-  useSocketEvent<PublicGameState>("room:state", (state) => {
-    // Update game config from server state when in lobby
-    if (state.phase === "lobby") {
-      if (gameState?.phase !== "lobby") {
-        // Reset role reveal when returning to lobby
-        setShowRoleReveal(false);
+  useSocketEvent<PublicGameState>(
+    "room:state",
+    (state) => {
+      // Update game config from server state when in lobby
+      if (state.phase === "lobby") {
+        if (gameState?.phase !== "lobby") {
+          // Reset role reveal when returning to lobby
+          setShowRoleReveal(false);
+        }
+        // Sync config from server state (merge with existing to handle optional fields)
+        setGameConfig((prev) => ({
+          mode: state.mode ?? prev.mode,
+          difficulty: state.difficulty ?? prev.difficulty,
+          roundTimerS:
+            (state.roundTimerSeconds as roundTimerS) ?? prev.roundTimerS,
+          voteTimeS: (state.voteTimerSeconds as voteTimeS) ?? prev.voteTimeS,
+          maxRounds: (state.maxRounds as maxRounds) ?? prev.maxRounds,
+        }));
       }
-      // Sync config from server state (merge with existing to handle optional fields)
-      setGameConfig((prev) => ({
-        mode: state.mode ?? prev.mode,
-        difficulty: state.difficulty ?? prev.difficulty,
-        roundTimerS: (state.roundTimerSeconds as roundTimerS) ?? prev.roundTimerS,
-        voteTimeS: (state.voteTimerSeconds as voteTimeS) ?? prev.voteTimeS,
-        maxRounds: (state.maxRounds as maxRounds) ?? prev.maxRounds,
-      }));
-    }
-    if (state.phase === "voting") {
-      setVotesRevealed(false);
-    }
-  }, [gameState]);
+      if (state.phase === "voting") {
+        setVotesRevealed(false);
+      }
+    },
+    [gameState],
+  );
 
   // Listen for vote progress
   useSocketEvent<{ votesCast: number; totalPlayers: number }>(
@@ -166,7 +182,7 @@ export default function GamePage() {
     (payload) => {
       setVoteProgress(payload);
     },
-    []
+    [],
   );
 
   // Listen for vote reveal
@@ -176,7 +192,7 @@ export default function GamePage() {
       setVoteTally(payload.tally);
       setVotesRevealed(true);
     },
-    []
+    [],
   );
 
   // Handle game start
@@ -216,8 +232,8 @@ export default function GamePage() {
       (response: { success: boolean; reason?: string }) => {
         if (!response?.success) {
           setError(response?.reason || "Failed to cast vote");
-      }
-      }
+        }
+      },
     );
   };
 
@@ -250,7 +266,9 @@ export default function GamePage() {
       <div className="flex h-screen w-screen items-center justify-center bg-[rgb(15,21,23)]">
         <div className="text-center">
           <div className="text-2xl font-bold text-white">Loading...</div>
-          <div className="mt-4 text-sm text-white/60">Connecting to room...</div>
+          <div className="mt-4 text-sm text-white/60">
+            Connecting to room...
+          </div>
         </div>
       </div>
     );
@@ -277,7 +295,9 @@ export default function GamePage() {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-[rgb(15,21,23)]">
         <div className="text-center">
-          <div className="text-2xl font-bold text-white">Intercepting Signal...</div>
+          <div className="text-2xl font-bold text-white">
+            Intercepting Signal...
+          </div>
         </div>
       </div>
     );
@@ -294,9 +314,7 @@ export default function GamePage() {
             gameConfig={gameConfig}
             setGameState={setGameConfig}
             onStartGame={handleStartGame}
-            isHost={Boolean(
-              gameState.hostPlayerId === playerId
-            )}
+            isHost={Boolean(gameState.hostPlayerId === playerId)}
             onConfigUpdate={(config) => {
               if (!socket) return;
               socket.emit("game:config:update", {
@@ -330,7 +348,11 @@ export default function GamePage() {
               <RoleSecretCode
                 word={playerWord || "NONE"}
                 wordColor="#ffffff"
-                secretWord={playerRole === "infiltrator" || playerRole === "spy" ? "SECRET ROLE" : "YOUR WORD"}
+                secretWord={
+                  playerRole === "infiltrator" || playerRole === "spy"
+                    ? "SECRET ROLE"
+                    : "YOUR WORD"
+                }
               />
               <div className="flex w-full max-w-md flex-col">
                 <RoleCurrentAssignment
@@ -338,18 +360,24 @@ export default function GamePage() {
                     playerRole === "infiltrator"
                       ? "INFILTRATOR"
                       : playerRole === "spy"
-                      ? "SPY"
-                      : playerRole === "citizen"
-                      ? "CITIZEN"
-                      : "AGENT"
+                        ? "SPY"
+                        : playerRole === "citizen"
+                          ? "CITIZEN"
+                          : "AGENT"
                   }
-                  roleColor={playerRole === "infiltrator" || playerRole === "spy" ? "#ef4444" : "#ffffff"}
+                  roleColor={
+                    playerRole === "infiltrator" || playerRole === "spy"
+                      ? "#ef4444"
+                      : "#ffffff"
+                  }
                 />
                 <button
                   onClick={handleProceedFromRole}
                   className="mt-6 flex w-full items-center justify-center gap-3 rounded-md bg-emerald-400 py-4 text-lg font-bold tracking-widest text-white transition hover:bg-emerald-300"
                 >
-                  <span className="material-symbols-outlined text-white">play_arrow</span>
+                  <span className="material-symbols-outlined text-white">
+                    play_arrow
+                  </span>
                   CONTINUE
                 </button>
               </div>
@@ -381,7 +409,9 @@ export default function GamePage() {
             />
             <div className="min-h-0 flex-1">
               <InGamePlayerGrid
-                players={Object.values(gameState.players).filter((p) => p.alive)}
+                players={Object.values(gameState.players).filter(
+                  (p) => p.alive,
+                )}
                 currentPlayerId={gameState.turn?.currentPlayerId || null}
                 playerId={playerId}
               />
@@ -391,12 +421,13 @@ export default function GamePage() {
                 word={playerWord || "NONE"}
                 wordColor="#ffffff"
               />
-              {isMyTurn && (
-                <InGameEndRound onEndTurn={handleEndTurn} />
-              )}
+              {isMyTurn && <InGameEndRound onEndTurn={handleEndTurn} />}
             </div>
             <div className="hidden items-end justify-between px-6 pb-6 lg:flex">
-              <InGameSecretCard word={playerWord || "NONE"} wordColor="#ffffff" />
+              <InGameSecretCard
+                word={playerWord || "NONE"}
+                wordColor="#ffffff"
+              />
               {isMyTurn && <InGameEndRound onEndTurn={handleEndTurn} />}
             </div>
           </main>
@@ -412,7 +443,9 @@ export default function GamePage() {
   }
 
   if (gameState.phase === "voting") {
-    const alivePlayers = Object.values(gameState.players).filter((p) => p.alive);
+    const alivePlayers = Object.values(gameState.players).filter(
+      (p) => p.alive,
+    );
     // Voting timer is managed server-side, we'll use a default for now
     const timeRemaining = 30; // This would come from gameState if we add it to PublicGameState
 
@@ -446,13 +479,15 @@ export default function GamePage() {
 
   if (gameState.phase === "ended") {
     // Game end screen
-    const winnerMessage = gameState.messages[gameState.messages.length - 1]?.content || "Game ended";
-    
+    const winnerMessage =
+      gameState.messages[gameState.messages.length - 1]?.content ||
+      "Game ended";
+
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[rgb(15,21,23)] px-4">
         <div className="max-w-2xl text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">GAME ENDED</h1>
-          <p className="text-xl text-emerald-400 mb-8">{winnerMessage}</p>
+          <h1 className="mb-4 text-4xl font-bold text-white">GAME ENDED</h1>
+          <p className="mb-8 text-xl text-emerald-400">{winnerMessage}</p>
           <button
             onClick={() => router.push("/")}
             className="rounded-md bg-emerald-500 px-8 py-4 text-lg font-semibold text-black transition hover:bg-emerald-400"

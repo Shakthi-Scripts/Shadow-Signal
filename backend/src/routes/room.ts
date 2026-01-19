@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { v4 as uuidV4 } from "uuid";
-import { createRoom, getRoomByInviteCode, getAllRooms } from "../game/rooms/room.manager.js";
+import {
+  createRoom,
+  getRoomByInviteCode,
+  getAllRooms,
+} from "../game/rooms/room.manager.js";
 
 const roomRouter = Router();
 
@@ -23,7 +27,7 @@ roomRouter.post("/create", (req, res) => {
       });
     }
 
-    const {inviteCode, playerId} = createRoom(alias.trim());
+    const { inviteCode, playerId } = createRoom(alias.trim());
 
     res.json({
       success: true,
@@ -86,7 +90,7 @@ roomRouter.post("/join", (req, res) => {
     // Check if alias already exists (case-insensitive)
     const trimmedAlias = alias.trim();
     const aliasExists = Array.from(room.state.players.values()).some(
-      (p) => p.name.trim().toLowerCase() === trimmedAlias.toLowerCase()
+      (p) => p.name.trim().toLowerCase() === trimmedAlias.toLowerCase(),
     );
     if (aliasExists) {
       return res.status(400).json({
@@ -97,7 +101,7 @@ roomRouter.post("/join", (req, res) => {
 
     // Check if room is full
     const alivePlayers = Array.from(room.state.players.values()).filter(
-      (p) => p.alive && p.connected
+      (p) => p.alive && p.connected,
     );
     if (alivePlayers.length >= 12) {
       return res.status(400).json({
@@ -128,7 +132,7 @@ roomRouter.get("/count", (req, res) => {
   try {
     const rooms = getAllRooms();
     const activeRoomsCount = rooms.length;
-    
+
     res.json({
       success: true,
       count: activeRoomsCount,

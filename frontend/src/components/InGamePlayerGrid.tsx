@@ -20,7 +20,7 @@ export default function InGamePlayerGrid({
         {players.map((player) => {
           const isCurrentSpeaker = player.id === currentPlayerId;
           const isMe = player.id === playerId;
-          
+
           return (
             <div
               key={player.id}
@@ -28,8 +28,8 @@ export default function InGamePlayerGrid({
                 isCurrentSpeaker
                   ? "border-emerald-400 bg-emerald-500/20 text-white"
                   : !player.alive
-                  ? "border-white/5 bg-white/5 text-white/40 opacity-50"
-                  : "border-white/10 bg-white/5 text-white/80"
+                    ? "border-white/5 bg-white/5 text-white/40 opacity-50"
+                    : "border-white/10 bg-white/5 text-white/80"
               }`}
             >
               <div className="flex gap-3 text-center">
@@ -38,7 +38,9 @@ export default function InGamePlayerGrid({
                   <div className="mt-1 text-[10px] text-emerald-400">(YOU)</div>
                 )}
                 {isCurrentSpeaker && (
-                  <div className="mt-1 text-[10px] text-emerald-400">SPEAKING</div>
+                  <div className="mt-1 text-[10px] text-emerald-400">
+                    SPEAKING
+                  </div>
                 )}
               </div>
             </div>

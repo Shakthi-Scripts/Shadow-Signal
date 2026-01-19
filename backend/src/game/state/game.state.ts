@@ -1,4 +1,11 @@
-import type { mode, phase, turn, message, PlayerId, eliminatedPlayer } from "../../types/game.js";
+import type {
+  mode,
+  phase,
+  turn,
+  message,
+  PlayerId,
+  eliminatedPlayer,
+} from "../../types/game.js";
 import type { PlayerMap } from "./player.state.js";
 
 type byPlayerVote = {
@@ -19,7 +26,7 @@ type VoteState = {
 export type GameState = {
   id: string;
   inviteCode: string;
-  hostPlayerId:string;
+  hostPlayerId: string;
   mode: mode;
   phase: phase;
   round: number;

@@ -48,7 +48,7 @@ export default function VotingChat({
           ACCUSATION CHAT
         </p>
 
-        <div className="space-y-4 text-sm leading-relaxed text-white/80 max-h-96 overflow-y-auto">
+        <div className="max-h-96 space-y-4 overflow-y-auto text-sm leading-relaxed text-white/80">
           {chatMessages.length === 0 ? (
             <p className="text-white/40">No messages yet.</p>
           ) : (
@@ -84,8 +84,9 @@ export default function VotingChat({
           </button>
         </div>
         <p className="mt-4 text-xs leading-relaxed text-white/40">
-          Select one player to <span className="italic">&quot;Flag as Anomaly&quot;</span>
-          . If the majority agrees, their signal will be severed permanently.
+          Select one player to{" "}
+          <span className="italic">&quot;Flag as Anomaly&quot;</span>. If the
+          majority agrees, their signal will be severed permanently.
         </p>
       </div>
     </aside>

@@ -5,7 +5,7 @@ export function createInitialState(
   roomId: string,
   hostPlayerId: string,
   alias: string,
-  inviteCode: string
+  inviteCode: string,
 ): GameState {
   const currentTimestamp = new Date().getTime();
   return {
@@ -48,6 +48,6 @@ export function createInitialState(
     hostId: hostPlayerId,
     roundTimerSeconds: 60,
     voteTimerSeconds: 30,
-    difficulty: "easy"
+    difficulty: "easy",
   };
 }

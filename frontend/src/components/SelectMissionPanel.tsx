@@ -62,7 +62,7 @@ export default function SelectMissionPanel({
     }
   };
 
-  const { gameState } = useGame()
+  const { gameState } = useGame();
 
   return (
     <main className="mt-6 h-full w-full flex-1 overflow-y-auto bg-black/20 p-6 lg:w-[56%]">
@@ -79,11 +79,11 @@ export default function SelectMissionPanel({
         <div
           onClick={isHost ? () => handleSetMode("infiltrator") : undefined}
           className={cn(
-            "rounded-md border p-6 transition-all cursor-pointer",
+            "cursor-pointer rounded-md border p-6 transition-all",
             !isHost && "cursor-not-allowed border-white/10 bg-black/30",
             gameConfig.mode === "infiltrator"
               ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
-              : "border-white/10 bg-black/30 hover:border-white/30"
+              : "border-white/10 bg-black/30 hover:border-white/30",
           )}
         >
           <h3 className="mb-3 text-sm font-semibold text-white">
@@ -99,11 +99,11 @@ export default function SelectMissionPanel({
         <div
           onClick={isHost ? () => handleSetMode("spy") : undefined}
           className={cn(
-            "rounded-md border p-6 transition-all cursor-pointer",
+            "cursor-pointer rounded-md border p-6 transition-all",
             !isHost && "cursor-not-allowed border-white/10 bg-black/30",
             gameConfig.mode === "spy"
               ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
-              : "border-white/10 bg-black/30 hover:border-white/30"
+              : "border-white/10 bg-black/30 hover:border-white/30",
           )}
         >
           <h3 className="mb-3 text-sm font-semibold text-white">SPY MODE</h3>
@@ -206,10 +206,14 @@ export default function SelectMissionPanel({
 
         <button
           onClick={onStartGame}
-          disabled={!isHost || !onStartGame || gameState?.players && Object.keys(gameState.players).length < 3 }
+          disabled={
+            !isHost ||
+            !onStartGame ||
+            (gameState?.players && Object.keys(gameState.players).length < 3)
+          }
           className={cn(
             "rounded-md bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400",
-            "disabled:opacity-30 disabled:cursor-not-allowed"
+            "disabled:cursor-not-allowed disabled:opacity-30",
           )}
         >
           START GAME
@@ -233,11 +237,11 @@ function OptionButton({
     <button
       disabled={disabled}
       className={cn(
-        "rounded-md border px-4 py-1.5 text-xs text-white transition-all cursor-pointer",
+        "cursor-pointer rounded-md border px-4 py-1.5 text-xs text-white transition-all",
         disabled && "cursor-not-allowed border-white/10 bg-black/30",
         isActive
           ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
-          : "border-white/10 bg-black/30 hover:border-white/30"
+          : "border-white/10 bg-black/30 hover:border-white/30",
       )}
       {...props}
     >

@@ -42,7 +42,7 @@ export interface PublicGameState {
   maxRounds: number;
   turn: turn | null;
   players: Record<PlayerId, PublicPlayer>;
-  eliminatedPlayers : Record<PlayerId, eliminatedPlayer> | null;
+  eliminatedPlayers: Record<PlayerId, eliminatedPlayer> | null;
   messages: [message];
   difficulty?: "easy" | "hard";
   roundTimerSeconds?: number;

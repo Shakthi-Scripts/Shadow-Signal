@@ -64,13 +64,11 @@ export default function CreateRoom() {
           className="w-full rounded-md border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-white/30 focus:border-emerald-400/60 focus:outline-none"
           placeholder="Enter Alias"
         />
-        {aliasError && (
-          <p className="text-xs text-red-400">{aliasError}</p>
-        )}
+        {aliasError && <p className="text-xs text-red-400">{aliasError}</p>}
 
         <button
           onClick={handleCreateRoom}
-          className="w-full rounded-md border border-[rgb(0,209,174)] bg-transparent px-6 py-4 text-sm font-semibold tracking-widest text-[rgb(0,209,174)] transition hover:bg-[rgb(0,209,174)]/10 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
+          className="w-full rounded-md border border-[rgb(0,209,174)] bg-transparent px-6 py-4 text-sm font-semibold tracking-widest text-[rgb(0,209,174)] transition hover:bg-[rgb(0,209,174)]/10 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
           disabled={alias.length === 0 || alias.length >= 20}
         >
           {isCreatingRoom ? "INITIALIZING ..." : "INITIALIZE ROOM"}

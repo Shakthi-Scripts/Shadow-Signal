@@ -59,7 +59,8 @@ export default function InGameTacticalFeed({
                   <span className="mr-2 text-xs text-white/30">
                     {formatTime(msg.timestamp)}
                   </span>
-                  <span className="text-emerald-400">SYSTEM:</span> {msg.content}
+                  <span className="text-emerald-400">SYSTEM:</span>{" "}
+                  {msg.content}
                 </p>
               );
             } else {

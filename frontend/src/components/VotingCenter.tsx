@@ -66,14 +66,16 @@ export default function VotingCenter({
             return (
               <button
                 key={player.id}
-                onClick={() => !votesRevealed && !isEliminated && onVote(player.id)}
+                onClick={() =>
+                  !votesRevealed && !isEliminated && onVote(player.id)
+                }
                 disabled={votesRevealed || isEliminated || !!selectedTarget}
                 className={`min-w-0 rounded-lg border px-4 py-4 text-left transition ${
                   isSelected
                     ? "border-red-500/60 bg-red-500/10"
                     : isEliminated
-                    ? "border-white/5 bg-white/5 opacity-50"
-                    : "border-white/10 bg-white/5 hover:border-white/30 disabled:cursor-not-allowed"
+                      ? "border-white/5 bg-white/5 opacity-50"
+                      : "border-white/10 bg-white/5 hover:border-white/30 disabled:cursor-not-allowed"
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -106,7 +108,8 @@ export default function VotingCenter({
       {selectedTarget && !votesRevealed && (
         <div className="mt-12 flex flex-col items-center sm:mt-16">
           <p className="text-center text-[9px] tracking-widest text-white/30 sm:text-[10px]">
-            VOTE CAST FOR {players.find((p) => p.id === selectedTarget)?.name || "UNKNOWN"}
+            VOTE CAST FOR{" "}
+            {players.find((p) => p.id === selectedTarget)?.name || "UNKNOWN"}
           </p>
         </div>
       )}

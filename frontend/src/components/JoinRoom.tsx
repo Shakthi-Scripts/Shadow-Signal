@@ -11,8 +11,11 @@ export default function JoinRoom() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleAccessCodeChange = (index: number, value: string) => {
-    const letter = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 1);
-    
+    const letter = value
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toUpperCase()
+      .slice(0, 1);
+
     const newCode = [...accessCode];
     newCode[index] = letter;
     setAccessCode(newCode);
@@ -23,7 +26,10 @@ export default function JoinRoom() {
     }
   };
 
-  const handleAccessCodeKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleAccessCodeKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     if (e.key === "Backspace" && !accessCode[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -31,7 +37,11 @@ export default function JoinRoom() {
 
   const handleAccessCodePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pastedText = e.clipboardData.getData("text").replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 5);
+    const pastedText = e.clipboardData
+      .getData("text")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toUpperCase()
+      .slice(0, 5);
     const newCode = ["", "", "", "", ""];
     for (let i = 0; i < pastedText.length && i < 5; i++) {
       newCode[i] = pastedText[i];
@@ -61,7 +71,7 @@ export default function JoinRoom() {
       const result = await api.joinRoom(codeString, alias);
       if (result.success && result.inviteCode && result.playerId) {
         localStorage.setItem("playerAlias", alias);
-        localStorage.setItem("playerId", result.playerId)
+        localStorage.setItem("playerId", result.playerId);
         window.location.href = `/game/${result.inviteCode}`;
       } else {
         alert(result.error || "Failed to join room");
@@ -100,12 +110,14 @@ export default function JoinRoom() {
                     inputRefs.current[index] = el;
                   }}
                   value={char}
-                  onInput={(e) => handleAccessCodeChange(index, e.currentTarget.value)}
+                  onInput={(e) =>
+                    handleAccessCodeChange(index, e.currentTarget.value)
+                  }
                   onKeyDown={(e) => handleAccessCodeKeyDown(index, e)}
                   onPaste={handleAccessCodePaste}
                   type="text"
                   maxLength={1}
-                  className="w-12 rounded-md border border-white/10 bg-black/30 px-3 py-3 text-center text-lg font-semibold uppercase text-white placeholder-white/30 focus:border-emerald-400/60 focus:outline-none"
+                  className="w-12 rounded-md border border-white/10 bg-black/30 px-3 py-3 text-center text-lg font-semibold text-white uppercase placeholder-white/30 focus:border-emerald-400/60 focus:outline-none"
                   placeholder="-"
                 />
               ))}
@@ -142,8 +154,12 @@ export default function JoinRoom() {
         <div className="mt-8 flex items-center gap-4">
           <button
             onClick={handleJoinRoom}
-            disabled={alias.length === 0 || alias.length >= 20 || accessCode.join("").length !== 5}
-            className="rounded-md bg-[rgb(0,209,174)] px-6 py-3 text-sm font-semibold tracking-widest text-black transition hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
+            disabled={
+              alias.length === 0 ||
+              alias.length >= 20 ||
+              accessCode.join("").length !== 5
+            }
+            className="rounded-md bg-[rgb(0,209,174)] px-6 py-3 text-sm font-semibold tracking-widest text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-30"
           >
             JOIN ROOM
           </button>

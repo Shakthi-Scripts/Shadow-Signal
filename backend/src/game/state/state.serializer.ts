@@ -3,11 +3,11 @@ import type { PublicGameState, PublicPlayer } from "../../types/game.js";
 
 export function serializeGameState(
   state: GameState,
-  requestingPlayerId: string
+  requestingPlayerId: string,
 ): PublicGameState {
   // Convert PlayerMap to Record, hiding secret words from other players
   const publicPlayers: Record<string, PublicPlayer> = {};
-  
+
   state.players.forEach((player, playerId) => {
     // Only show secret word to the player themselves
     publicPlayers[playerId] = {
@@ -36,7 +36,7 @@ export function serializeGameState(
     turn: state.turn || null,
     players: publicPlayers,
     eliminatedPlayers: state.eliminatedPlayers || {},
-    messages: state.messages as [typeof state.messages[0]],
+    messages: state.messages as [(typeof state.messages)[0]],
     difficulty: state.difficulty,
     roundTimerSeconds: state.roundTimerSeconds,
     voteTimerSeconds: state.voteTimerSeconds,
@@ -48,7 +48,7 @@ export function serializeGameState(
  */
 export function getPlayerSecretWord(
   state: GameState,
-  playerId: string
+  playerId: string,
 ): string | null {
   const player = state.players.get(playerId);
   return player?.secretWord || null;

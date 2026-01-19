@@ -1,5 +1,8 @@
 import type { GameState } from "../state/game.state.js";
-import { transitionPhase, addSystemMessage } from "../state/state.transitions.js";
+import {
+  transitionPhase,
+  addSystemMessage,
+} from "../state/state.transitions.js";
 import { initializeVoting } from "./voting.manager.js";
 
 /**
@@ -119,7 +122,11 @@ function transitionToVoting(state: GameState): void {
   state.turn = null;
   state.currentTurnIndex = -1;
   initializeVoting(state);
-  transitionPhase(state, "voting", "Speaking phase complete. Voting begins now.");
+  transitionPhase(
+    state,
+    "voting",
+    "Speaking phase complete. Voting begins now.",
+  );
 }
 
 /**
@@ -127,6 +134,6 @@ function transitionToVoting(state: GameState): void {
  */
 function getAlivePlayers(state: GameState) {
   return Array.from(state.players.values()).filter(
-    (p) => p.alive && p.connected
+    (p) => p.alive && p.connected,
   );
 }

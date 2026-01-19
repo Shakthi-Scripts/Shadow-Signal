@@ -21,10 +21,7 @@ export class AIService {
    * Generate a similar but different word for Spy mode
    * Falls back to dataset similar words if AI is unavailable
    */
-  async generateSpyWord(
-    word: string,
-    similarWords: string[]
-  ): Promise<string> {
+  async generateSpyWord(word: string, similarWords: string[]): Promise<string> {
     // If no API key, use fallback
     if (!this.apiKey) {
       return this.fallbackSpyWord(word, similarWords);

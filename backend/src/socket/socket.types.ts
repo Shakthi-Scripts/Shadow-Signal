@@ -2,25 +2,37 @@ import type { PublicGameState } from "../types/game.js";
 
 export interface ClientToServerEvents {
   "room:join": (
-    payload: { inviteCode: string; alias: string, playerId: string },
-    ack: (response: { success: boolean; reason?: string }) => void
+    payload: { inviteCode: string; alias: string; playerId: string },
+    ack: (response: { success: boolean; reason?: string }) => void,
   ) => void;
   "room:leave": () => void;
 
-  "game:start": (payload?: { mode?: "infiltrator" | "spy"; difficulty?: "easy" | "hard"; roundTimerSeconds?: number; voteTimerSeconds?: number; maxRounds?: number }) => void;
-  "game:config:update": (payload: { mode?: "infiltrator" | "spy"; difficulty?: "easy" | "hard"; roundTimerSeconds?: number; voteTimerSeconds?: number; maxRounds?: number }) => void;
+  "game:start": (payload?: {
+    mode?: "infiltrator" | "spy";
+    difficulty?: "easy" | "hard";
+    roundTimerSeconds?: number;
+    voteTimerSeconds?: number;
+    maxRounds?: number;
+  }) => void;
+  "game:config:update": (payload: {
+    mode?: "infiltrator" | "spy";
+    difficulty?: "easy" | "hard";
+    roundTimerSeconds?: number;
+    voteTimerSeconds?: number;
+    maxRounds?: number;
+  }) => void;
   "turn:end": () => void;
   "chat:send": (payload: { content: string }) => void;
 
   "vote:cast": (
     payload: { targetId: string },
-    ack?: (response: { success: boolean; reason?: string }) => void
+    ack?: (response: { success: boolean; reason?: string }) => void,
   ) => void;
   "vote:reveal": () => void;
 }
 
 export interface ServerToClientEvents {
-  "error": (payload: { message: string }) => void;
+  error: (payload: { message: string }) => void;
 
   "room:joined": (payload: { roomId: string }) => void;
   "room:state": (state: PublicGameState) => void;
@@ -39,17 +51,13 @@ export interface ServerToClientEvents {
     votesCast: number;
     totalPlayers: number;
   }) => void;
-  "vote:reveal": (payload: {
-    tally: Record<string, number>;
-  }) => void;
+  "vote:reveal": (payload: { tally: Record<string, number> }) => void;
 }
-
 
 export interface InterServerEvents {
   "room:sync": (roomId: string) => void;
   "room:destroy": (roomId: string) => void;
 }
-
 
 export interface SocketData {
   roomId?: string;

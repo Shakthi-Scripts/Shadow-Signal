@@ -1,9 +1,15 @@
 import { Socket } from "socket.io";
-import type { ClientToServerEvents, ServerToClientEvents } from "../socket.types.js";
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "../socket.types.js";
 import { v4 as uuidV4 } from "uuid";
 import { getRoom } from "../../game/rooms/room.manager.js";
 import { startGame } from "../../game/flow/game.start.js";
-import { getPlayerSecretWord, serializeGameState } from "../../game/state/state.serializer.js";
+import {
+  getPlayerSecretWord,
+  serializeGameState,
+} from "../../game/state/state.serializer.js";
 import { io } from "../../server.js";
 import { endTurnEarly, startTurn } from "../../game/flow/turn.manager.js";
 
@@ -40,8 +46,10 @@ export function registerActionEvents(socket: SocketType) {
       const config = {
         mode: payload?.mode || room.state.mode,
         difficulty: payload?.difficulty || "easy",
-        roundTimerSeconds: payload?.roundTimerSeconds || room.state.roundTimerSeconds,
-        voteTimerSeconds: payload?.voteTimerSeconds || room.state.voteTimerSeconds,
+        roundTimerSeconds:
+          payload?.roundTimerSeconds || room.state.roundTimerSeconds,
+        voteTimerSeconds:
+          payload?.voteTimerSeconds || room.state.voteTimerSeconds,
         maxRounds: payload?.maxRounds || room.state.maxRounds,
       };
 
@@ -55,19 +63,28 @@ export function registerActionEvents(socket: SocketType) {
       room.state.players.forEach((player, playerId) => {
         const secretWord = getPlayerSecretWord(room.state, playerId);
         io.to(playerId).emit("role:assigned", {
-          role: player.secretWord === null ? (room.state.mode === "infiltrator" ? "infiltrator" : "spy") : (room.state.mode === "infiltrator" ? "citizen" : "agent"),
+          role:
+            player.secretWord === null
+              ? room.state.mode === "infiltrator"
+                ? "infiltrator"
+                : "spy"
+              : room.state.mode === "infiltrator"
+                ? "citizen"
+                : "agent",
           word: secretWord,
         });
       });
 
       // Start first turn
       startTurn(room.state);
-      
+
       const updatedState = serializeGameState(room.state, socket.data.playerId);
       io.to(roomId).emit("room:state", updatedState);
     } catch (error: any) {
       console.error("Error starting game:", error);
-      socket.emit("error", { message: error.message || "Failed to start game" });
+      socket.emit("error", {
+        message: error.message || "Failed to start game",
+      });
     }
   });
 
@@ -115,7 +132,9 @@ export function registerActionEvents(socket: SocketType) {
       }
 
       if (content.length > 500) {
-        socket.emit("error", { message: "Message too long (max 500 characters)" });
+        socket.emit("error", {
+          message: "Message too long (max 500 characters)",
+        });
         return;
       }
 
@@ -141,7 +160,9 @@ export function registerActionEvents(socket: SocketType) {
       io.to(roomId).emit("room:state", publicState);
     } catch (error: any) {
       console.error("Error sending chat:", error);
-      socket.emit("error", { message: error.message || "Failed to send message" });
+      socket.emit("error", {
+        message: error.message || "Failed to send message",
+      });
     }
   });
 
@@ -162,7 +183,7 @@ export function registerActionEvents(socket: SocketType) {
   //     }
 
   //     const success = castVote(room.state, socket.data.playerId, targetId);
-      
+
   //     if (!success) {
   //       ack?.({ success: false, reason: "Invalid vote" });
   //       return;
@@ -231,7 +252,7 @@ export function registerActionEvents(socket: SocketType) {
   //     }
 
   //     completeVoting(room.state);
-      
+
   //     const tally: Record<string, number> = {};
   //     room.state.votes?.tally?.forEach((votes, playerId) => {
   //       tally[playerId] = votes;
@@ -263,13 +284,17 @@ export function registerActionEvents(socket: SocketType) {
 
       // Check if player is host
       if (room.state.hostPlayerId !== socket.data.playerId) {
-        socket.emit("error", { message: "Only the host can update game config" });
+        socket.emit("error", {
+          message: "Only the host can update game config",
+        });
         return;
       }
 
       // Check if game is in lobby
       if (room.state.phase !== "lobby") {
-        socket.emit("error", { message: "Game config can only be updated in lobby" });
+        socket.emit("error", {
+          message: "Game config can only be updated in lobby",
+        });
         return;
       }
 
@@ -289,7 +314,9 @@ export function registerActionEvents(socket: SocketType) {
       if (payload.maxRounds !== undefined) {
         // Validate maxRounds is between 3 and 12
         if (payload.maxRounds < 3 || payload.maxRounds > 12) {
-          socket.emit("error", { message: "maxRounds must be between 3 and 12" });
+          socket.emit("error", {
+            message: "maxRounds must be between 3 and 12",
+          });
           return;
         }
         room.state.maxRounds = payload.maxRounds;
@@ -300,7 +327,9 @@ export function registerActionEvents(socket: SocketType) {
       io.to(roomId).emit("room:state", publicState);
     } catch (error: any) {
       console.error("Error updating game config:", error);
-      socket.emit("error", { message: error.message || "Failed to update game config" });
+      socket.emit("error", {
+        message: error.message || "Failed to update game config",
+      });
     }
   });
 }

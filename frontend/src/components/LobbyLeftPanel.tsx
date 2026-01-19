@@ -34,7 +34,7 @@ export default function LobbyLeftPanel() {
         {players.map((player) => (
           <div
             key={player.id}
-            className={`flex justify-between items-center rounded-md border border-white/10 bg-black/30 p-3 ${
+            className={`flex items-center justify-between rounded-md border border-white/10 bg-black/30 p-3 ${
               !player.alive ? "opacity-50" : ""
             }`}
           >
@@ -50,11 +50,9 @@ export default function LobbyLeftPanel() {
                   : "DISCONNECTED"}
               </div>
             </div>
-            { player.id === gameState.hostPlayerId &&
-            <div className="text-sm">
-              Host
-            </div>
-            }
+            {player.id === gameState.hostPlayerId && (
+              <div className="text-sm">Host</div>
+            )}
           </div>
         ))}
       </div>

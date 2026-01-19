@@ -1,5 +1,9 @@
 import type { GameState } from "../state/game.state.js";
-import { transitionPhase, addSystemMessage, incrementRound } from "../state/state.transitions.js";
+import {
+  transitionPhase,
+  addSystemMessage,
+  incrementRound,
+} from "../state/state.transitions.js";
 import { startTurn } from "./turn.manager.js";
 
 /**
@@ -11,7 +15,7 @@ export function processElimination(state: GameState): void {
   }
 
   const alivePlayers = getAlivePlayers(state);
-  
+
   if (alivePlayers.length === 0) {
     return;
   }
@@ -72,14 +76,11 @@ export function processElimination(state: GameState): void {
     reason: "vote",
   };
 
-  addSystemMessage(
-    state,
-    `${eliminatedPlayer.name} has been eliminated.`
-  );
+  addSystemMessage(state, `${eliminatedPlayer.name} has been eliminated.`);
 
   // Check win conditions
   const winResult = checkWinConditions(state, eliminatedPlayerId);
-  
+
   if (winResult.gameEnded) {
     transitionPhase(state, "ended", winResult.message);
   } else {
@@ -93,7 +94,7 @@ export function processElimination(state: GameState): void {
  */
 function checkWinConditions(
   state: GameState,
-  eliminatedPlayerId: string
+  eliminatedPlayerId: string,
 ): { gameEnded: boolean; message: string } {
   const alivePlayers = getAlivePlayers(state);
 
@@ -108,7 +109,10 @@ function checkWinConditions(
     eliminatedPlayer.secretWord === null ||
     (state.mode === "spy" &&
       Array.from(state.players.values()).some(
-        (p) => p.alive && p.secretWord !== null && p.secretWord !== eliminatedPlayer.secretWord
+        (p) =>
+          p.alive &&
+          p.secretWord !== null &&
+          p.secretWord !== eliminatedPlayer.secretWord,
       ));
 
   if (state.mode === "infiltrator") {
@@ -124,7 +128,7 @@ function checkWinConditions(
     // Spy mode: Agents win if spy eliminated
     // Check if eliminated player had different word (spy)
     const agentWord = Array.from(state.players.values()).find(
-      (p) => p.alive && p.secretWord !== null
+      (p) => p.alive && p.secretWord !== null,
     )?.secretWord;
 
     if (eliminatedPlayer.secretWord !== agentWord) {
@@ -144,7 +148,7 @@ function checkWinConditions(
       } else {
         // Spy mode - check if spy is alive
         const agentWord = alivePlayers.find(
-          (ap) => ap.secretWord !== null
+          (ap) => ap.secretWord !== null,
         )?.secretWord;
         return p.secretWord !== agentWord && p.secretWord !== null;
       }
@@ -195,11 +199,7 @@ function startNextRound(state: GameState): void {
   state.speakingOrder = shuffleArray([...alivePlayerIds]);
 
   incrementRound(state);
-  transitionPhase(
-    state,
-    "playing",
-    `Round ${state.round} begins.`
-  );
+  transitionPhase(state, "playing", `Round ${state.round} begins.`);
 
   // Start first turn
   startTurn(state);
@@ -219,12 +219,11 @@ function shuffleArray<T>(array: readonly T[]): T[] {
   return shuffled;
 }
 
-
 /**
  * Get all alive players
  */
 function getAlivePlayers(state: GameState) {
   return Array.from(state.players.values()).filter(
-    (p) => p.alive && p.connected
+    (p) => p.alive && p.connected,
   );
 }

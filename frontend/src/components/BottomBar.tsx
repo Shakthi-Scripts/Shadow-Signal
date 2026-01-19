@@ -17,9 +17,8 @@ export default function BottomBar() {
     fetchActiveRoomCount();
   }, []);
 
-  const displayCount = activeRoomsCount !== null 
-    ? activeRoomsCount.toLocaleString() 
-    : "---";
+  const displayCount =
+    activeRoomsCount !== null ? activeRoomsCount.toLocaleString() : "---";
 
   return (
     <div className="mx-auto mt-10 max-w-6xl px-6">

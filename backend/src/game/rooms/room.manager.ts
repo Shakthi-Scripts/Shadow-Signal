@@ -15,7 +15,7 @@ export function createRoom(alias: string) {
     state: createInitialState(roomId, playerId, alias, inviteCode),
   };
   rooms.set(roomId, room);
-  return {inviteCode, playerId};
+  return { inviteCode, playerId };
 }
 
 export function getRoom(roomId: string) {
@@ -40,9 +40,9 @@ export function deleteRoom(roomId: string) {
 }
 
 function generateInviteCode(length = 5): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   const array = new Uint8Array(length);
   crypto.getRandomValues(array);
-  const inviteCode = Array.from(array, x => chars[x % 36]).join('');
+  const inviteCode = Array.from(array, (x) => chars[x % 36]).join("");
   return inviteCodes.has(inviteCode) ? generateInviteCode() : inviteCode;
 }

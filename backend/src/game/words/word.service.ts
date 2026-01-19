@@ -71,7 +71,7 @@ export async function selectWordsForSpyMode(): Promise<{
   //   agentWord: selectedEntry.word,
   //   spyWord: spyWord,
   // };
-  return {agentWord: "NONE", spyWord: "NUN"};
+  return { agentWord: "NONE", spyWord: "NUN" };
 }
 
 /**

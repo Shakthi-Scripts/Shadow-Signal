@@ -25,7 +25,13 @@
         },
         {
           "word": "Ice Cream",
-          "similar": ["Frozen yogurt", "Gelato", "Sorbet", "Milkshake", "Sundae"]
+          "similar": [
+            "Frozen yogurt",
+            "Gelato",
+            "Sorbet",
+            "Milkshake",
+            "Sundae"
+          ]
         }
       ]
     },
@@ -67,11 +73,23 @@
         },
         {
           "word": "Swimming",
-          "similar": ["Diving", "Surfing", "Kayaking", "Snorkeling", "Water polo"]
+          "similar": [
+            "Diving",
+            "Surfing",
+            "Kayaking",
+            "Snorkeling",
+            "Water polo"
+          ]
         },
         {
           "word": "Tennis",
-          "similar": ["Badminton", "Squash", "Ping pong", "Racquetball", "Pickleball"]
+          "similar": [
+            "Badminton",
+            "Squash",
+            "Ping pong",
+            "Racquetball",
+            "Pickleball"
+          ]
         },
         {
           "word": "Running",
@@ -79,7 +97,13 @@
         },
         {
           "word": "Yoga",
-          "similar": ["Pilates", "Meditation", "Stretching", "Tai chi", "Aerobics"]
+          "similar": [
+            "Pilates",
+            "Meditation",
+            "Stretching",
+            "Tai chi",
+            "Aerobics"
+          ]
         },
         {
           "word": "Golf",
@@ -100,11 +124,23 @@
         },
         {
           "word": "Video game",
-          "similar": ["Board game", "Card game", "Mobile game", "Console", "PC game"]
+          "similar": [
+            "Board game",
+            "Card game",
+            "Mobile game",
+            "Console",
+            "PC game"
+          ]
         },
         {
           "word": "Netflix",
-          "similar": ["Streaming", "TV show", "Series", "Binge-watch", "Episode"]
+          "similar": [
+            "Streaming",
+            "TV show",
+            "Series",
+            "Binge-watch",
+            "Episode"
+          ]
         },
         {
           "word": "Book",

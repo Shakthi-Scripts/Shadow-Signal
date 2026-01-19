@@ -14,7 +14,7 @@ export interface PlayerRole {
  */
 export function assignRoles(
   state: GameState,
-  words: { citizenWord: string; spyWord?: string }
+  words: { citizenWord: string; spyWord?: string },
 ): PlayerRole[] {
   const playerIds = Array.from(state.players.keys());
   const roles: PlayerRole[] = [];
@@ -22,7 +22,7 @@ export function assignRoles(
   if (state.mode === "infiltrator") {
     // Infiltrator mode: 1 infiltrator, rest are citizens
     const infiltratorIndex = Math.floor(Math.random() * playerIds.length);
-    
+
     playerIds.forEach((playerId, index) => {
       if (index === infiltratorIndex) {
         roles.push({
@@ -41,7 +41,7 @@ export function assignRoles(
   } else {
     // Spy mode: 1 spy, rest are agents
     const spyIndex = Math.floor(Math.random() * playerIds.length);
-    
+
     playerIds.forEach((playerId, index) => {
       if (index === spyIndex) {
         roles.push({
@@ -73,10 +73,7 @@ export function assignRoles(
 /**
  * Apply roles to game state
  */
-export function applyRolesToState(
-  state: GameState,
-  roles: PlayerRole[]
-): void {
+export function applyRolesToState(state: GameState, roles: PlayerRole[]): void {
   roles.forEach(({ playerId, role, word }) => {
     const player = state.players.get(playerId);
     if (player) {
