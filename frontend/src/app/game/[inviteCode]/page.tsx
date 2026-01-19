@@ -277,7 +277,7 @@ export default function GamePage() {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-[rgb(15,21,23)]">
         <div className="text-center">
-          <div className="text-2xl font-bold text-white">Waiting for game state...</div>
+          <div className="text-2xl font-bold text-white">Intercepting Signal...</div>
         </div>
       </div>
     );
