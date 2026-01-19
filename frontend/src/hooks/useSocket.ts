@@ -2,24 +2,6 @@
 
 import { useEffect } from "react";
 import { useGame } from "../contexts/GameContext";
-import type { Socket } from "socket.io-client";
-
-export function useSocket() {
-  const { socket, connectSocket, disconnect } = useGame();
-
-  useEffect(() => {
-    // Socket connection is managed by GameContext
-    return () => {
-      // Cleanup handled by GameContext
-    };
-  }, []);
-
-  return {
-    socket,
-    connectSocket,
-    disconnect,
-  };
-}
 
 export function useSocketEvent<T>(
   event: string,
