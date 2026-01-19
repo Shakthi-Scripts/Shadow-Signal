@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosInstance } from "axios";
 
 const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
@@ -18,11 +18,12 @@ class API {
       } else {
         return { success: false, error: data.error || "Failed to create room" };
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error creating room:", err);
+      const error = err as AxiosError;
       return {
         success: false,
-        error: err.response?.data?.error || err.message || "Failed to create room",
+        error: error.message || "Failed to create room",
       };
     }
   }
@@ -41,11 +42,31 @@ class API {
       } else {
         return { success: false, error: data.error || "Failed to join room" };
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error joining room:", err);
+      const error = err as AxiosError;
       return {
         success: false,
-        error: err.response?.data?.error || err.message || "Failed to join room",
+        error: error.message || "Failed to join room",
+      };
+    }
+  }
+
+  async getActiveRoomCount(): Promise<{ success: boolean; count?: number; error?: string }> {
+    try {
+      const res = await this.api.get("/api/room/count");
+      const data = res.data;
+      if (data.success === true) {
+        return { success: true, count: data.count };
+      } else {
+        return { success: false, error: data.error || "Failed to get room count" };
+      }
+    } catch (err) {
+      console.error("Error getting room count:", err);
+      const error = err as AxiosError;
+      return {
+        success: false,
+        error: error.message || "Failed to get room count",
       };
     }
   }

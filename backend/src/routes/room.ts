@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { v4 as uuidV4 } from "uuid";
-import { createRoom, getRoomByInviteCode } from "../game/rooms/room.manager.js";
+import { createRoom, getRoomByInviteCode, getAllRooms } from "../game/rooms/room.manager.js";
 
 const roomRouter = Router();
 
@@ -120,6 +120,24 @@ roomRouter.post("/join", (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to join room",
+    });
+  }
+});
+
+roomRouter.get("/count", (req, res) => {
+  try {
+    const rooms = getAllRooms();
+    const activeRoomsCount = rooms.length;
+    
+    res.json({
+      success: true,
+      count: activeRoomsCount,
+    });
+  } catch (error: any) {
+    console.error("Error getting room count:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to get room count",
     });
   }
 });
