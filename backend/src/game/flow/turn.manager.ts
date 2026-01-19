@@ -6,7 +6,7 @@ import {
 import { initializeVoting } from "./voting.manager.js";
 
 /**
- * Start the speaking turn for the current player
+ * Start the typing turn for the current player
  */
 export function startTurn(state: GameState): void {
   if (state.phase !== "playing") {
@@ -52,7 +52,7 @@ export function startTurn(state: GameState): void {
 
   const player = state.players.get(currentPlayerId);
   if (player) {
-    addSystemMessage(state, `${player.name} is now speaking.`);
+    addSystemMessage(state, `${player.name} is now typing.`);
   }
 }
 
@@ -70,7 +70,7 @@ export function endTurnEarly(state: GameState, playerId: string): void {
 
   const player = state.players.get(playerId);
   if (player) {
-    addSystemMessage(state, `${player.name} finished speaking.`);
+    addSystemMessage(state, `${player.name} finished typing.`);
   }
 
   // Move to next player
@@ -116,7 +116,7 @@ export function checkTurnTimer(state: GameState): void {
 }
 
 /**
- * Transition from speaking phase to voting phase
+ * Transition from typing phase to voting phase
  */
 function transitionToVoting(state: GameState): void {
   state.turn = null;
@@ -125,7 +125,7 @@ function transitionToVoting(state: GameState): void {
   transitionPhase(
     state,
     "voting",
-    "Speaking phase complete. Voting begins now.",
+    "Typing phase complete. Voting begins now.",
   );
 }
 

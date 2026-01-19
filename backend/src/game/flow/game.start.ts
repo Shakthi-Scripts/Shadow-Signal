@@ -19,7 +19,7 @@ export interface GameStartConfig {
 }
 
 /**
- * Start the game - assign roles, words, and initialize speaking phase
+ * Start the game - assign roles, words, and initialize typing phase
  */
 export async function startGame(
   state: GameState,

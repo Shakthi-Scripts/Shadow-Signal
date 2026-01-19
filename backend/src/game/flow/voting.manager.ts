@@ -16,6 +16,9 @@ export function initializeVoting(state: GameState): void {
     return;
   }
 
+  // Clear any existing votes before initializing new voting
+  state.votes = null;
+
   const voteDurationMs = state.voteTimerSeconds * 1000;
   const endsAt = new Date().getTime() + voteDurationMs;
 
@@ -119,8 +122,9 @@ export function checkVotingTimer(state: GameState): boolean {
   }
 
   if (new Date().getTime() >= state.votes.endsAt && !state.votes.revealed) {
-    revealVotes(state);
-    return true; // Indicates elimination should be processed
+    // Timer expired - complete voting (reveals votes and processes elimination)
+    completeVoting(state);
+    return true; // Indicates state was updated
   }
 
   return false;
