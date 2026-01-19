@@ -37,6 +37,9 @@ export function serializeGameState(
     players: publicPlayers,
     eliminatedPlayers: state.eliminatedPlayers || {},
     messages: state.messages as [typeof state.messages[0]],
+    difficulty: state.difficulty,
+    roundTimerSeconds: state.roundTimerSeconds,
+    voteTimerSeconds: state.voteTimerSeconds,
   };
 }
 

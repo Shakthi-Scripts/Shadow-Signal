@@ -44,4 +44,7 @@ export interface PublicGameState {
   players: Record<PlayerId, PublicPlayer>;
   eliminatedPlayers : Record<PlayerId, eliminatedPlayer> | null;
   messages: [message];
+  difficulty?: "easy" | "hard";
+  roundTimerSeconds?: number;
+  voteTimerSeconds?: number;
 }

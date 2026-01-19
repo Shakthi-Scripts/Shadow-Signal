@@ -11,6 +11,7 @@ export interface GameStartConfig {
   difficulty: "easy" | "hard";
   roundTimerSeconds: number;
   voteTimerSeconds: number;
+  maxRounds: number;
 }
 
 /**
@@ -39,6 +40,7 @@ export async function startGame(
   state.roundTimerSeconds = config.roundTimerSeconds;
   state.voteTimerSeconds = config.voteTimerSeconds;
   state.difficulty = config.difficulty;
+  state.maxRounds = config.maxRounds;
 
   // Select words based on mode
   let words: { citizenWord: string; spyWord?: string };
