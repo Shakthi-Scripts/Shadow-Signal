@@ -1,40 +1,52 @@
 import axios, { AxiosInstance } from "axios";
 
-const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
 class API {
   private api: AxiosInstance;
 
   constructor() {
-    console.log(backendURL);
     this.api = axios.create({ baseURL: backendURL });
   }
 
-  async createRoom() {
+  async createRoom(alias: string): Promise<{ success: boolean; inviteCode?: string; playerId?: string; error?: string }> {
     try {
-      const res = await this.api.post("/room/create");
+      const res = await this.api.post("/api/room/create", { alias });
       const data = res.data;
       if (data.success === true) {
-        // join room
+        return { success: true, inviteCode: data.inviteCode, playerId: data.playerId };
       } else {
-        throw Error("Failed to Create room");
+        return { success: false, error: data.error || "Failed to create room" };
       }
-    } catch (err) {
-      console.error("Error :", err);
+    } catch (err: any) {
+      console.error("Error creating room:", err);
+      return {
+        success: false,
+        error: err.response?.data?.error || err.message || "Failed to create room",
+      };
     }
   }
 
-  async joinRoom(accessCode: string, alias: string) {
+  async joinRoom(accessCode: string, alias: string): Promise<{ success: boolean; roomId?: string; playerId?: string; inviteCode?: string; error?: string }> {
     try {
-      const res = await this.api.post("/room/join", { accessCode, alias });
+      const res = await this.api.post("/api/room/join", { accessCode, alias });
       const data = res.data;
       if (data.success === true) {
-        // join room
+        return {
+          success: true,
+          roomId: data.roomId,
+          playerId: data.playerId,
+          inviteCode: data.inviteCode,
+        };
       } else {
-        throw Error("Failed to Join Room");
+        return { success: false, error: data.error || "Failed to join room" };
       }
-    } catch (err) {
-      console.error("Error :", err);
+    } catch (err: any) {
+      console.error("Error joining room:", err);
+      return {
+        success: false,
+        error: err.response?.data?.error || err.message || "Failed to join room",
+      };
     }
   }
 }
