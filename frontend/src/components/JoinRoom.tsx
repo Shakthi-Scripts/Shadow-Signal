@@ -6,9 +6,15 @@ import api from "../libs/api";
 export default function JoinRoom() {
   const [accessCode, setAccessCode] = useState<string>("");
   const [alias, setAlias] = useState<string>("");
+  const [aliasError, setAliasError] = useState<string>("");
 
   const handleJoinRoom = async () => {
     if (accessCode?.length === 0 || alias?.length === 0) return;
+    if (alias.length >= 20) {
+      setAliasError("Alias must be less than 20 characters");
+      return;
+    }
+    setAliasError("");
     try {
       const result = await api.joinRoom(accessCode, alias);
       if (result.success && result.inviteCode && result.playerId) {
@@ -57,18 +63,30 @@ export default function JoinRoom() {
               OPERATOR ID
             </label>
             <input
-              onInput={(e) => setAlias(e.currentTarget.value)}
+              onInput={(e) => {
+                const value = e.currentTarget.value;
+                setAlias(value);
+                if (value.length >= 20) {
+                  setAliasError("Alias must be less than 20 characters");
+                } else {
+                  setAliasError("");
+                }
+              }}
               type="text"
               placeholder="Enter Alias"
               className="w-full rounded-md border border-white/10 bg-black/30 px-4 py-3 text-white placeholder-white/30 focus:border-emerald-400/60 focus:outline-none"
             />
+            {aliasError && (
+              <p className="mt-1 text-xs text-red-400">{aliasError}</p>
+            )}
           </div>
         </div>
 
         <div className="mt-8 flex items-center gap-4">
           <button
             onClick={handleJoinRoom}
-            className="rounded-md bg-[rgb(0,209,174)] px-6 py-3 text-sm font-semibold tracking-widest text-black transition hover:opacity-90"
+            disabled={alias.length === 0 || alias.length >= 20 || accessCode.length === 0}
+            className="rounded-md bg-[rgb(0,209,174)] px-6 py-3 text-sm font-semibold tracking-widest text-black transition hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             JOIN ROOM
           </button>
