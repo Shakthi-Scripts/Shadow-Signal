@@ -8,7 +8,7 @@ import { getSocket } from "@/libs/socket";
 import LobbyNavBar from "@/components/LobbyNavBar";
 import LobbyLeftPanel from "@/components/LobbyLeftPanel";
 import SelectMissionPanel from "@/components/SelectMissionPanel";
-import LobbySystemLog from "@/components/LobbySystemLog";
+import LobbyLog from "@/components/LobbySystemLog";
 import LobbyBroadcast from "@/components/LobbyBroadcast";
 import LobbyFooter from "@/components/LobbyFooter";
 import RoleSecretCode from "@/components/RoleSecretCode";
@@ -330,7 +330,7 @@ export default function GamePage() {
               });
             }}
           />
-          <LobbySystemLog />
+          <LobbyLog />
         </div>
         <LobbyBroadcast />
         <LobbyFooter />

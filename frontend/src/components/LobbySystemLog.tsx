@@ -3,9 +3,9 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useGame } from "@/contexts/GameContext";
 
-export default function LobbySystemLog() {
+export default function LobbyLog() {
   const { gameState } = useGame();
-  const [viewMode, setViewMode] = useState<"system" | "broadcast">("system");
+  const [viewMode, setViewMode] = useState<"system" | "broadcast">("broadcast");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const getPlayerName = (playerId: string) => {
@@ -69,16 +69,6 @@ export default function LobbySystemLog() {
         </div>
         <div className="flex gap-2">
           <button
-            onClick={() => setViewMode("system")}
-            className={`rounded-md px-3 py-1 text-xs transition ${
-              viewMode === "system"
-                ? "border border-emerald-500/40 bg-emerald-500/20 text-emerald-400"
-                : "border border-white/10 bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
-          >
-            SYSTEM
-          </button>
-          <button
             onClick={() => setViewMode("broadcast")}
             className={`rounded-md px-3 py-1 text-xs transition ${
               viewMode === "broadcast"
@@ -87,6 +77,16 @@ export default function LobbySystemLog() {
             }`}
           >
             BROADCAST
+          </button>
+          <button
+            onClick={() => setViewMode("system")}
+            className={`rounded-md px-3 py-1 text-xs transition ${
+              viewMode === "system"
+                ? "border border-emerald-500/40 bg-emerald-500/20 text-emerald-400"
+                : "border border-white/10 bg-white/5 text-white/60 hover:bg-white/10"
+            }`}
+          >
+            SYSTEM
           </button>
         </div>
       </header>
