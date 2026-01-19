@@ -65,6 +65,16 @@ export function registerRoomEvents(socket: SocketType) {
         addSystemMessage(room.state, `${alias.trim()} joined the room.`);
       }
 
+      // If the new/reconnected player is the only player in the room, make them the host
+      const connectedPlayers = Array.from(room.state.players.values()).filter(
+        (p) => p.connected
+      );
+      const firstConnectedPlayer = connectedPlayers[0];
+      if (connectedPlayers.length === 1 && firstConnectedPlayer?.id === playerId) {
+        room.state.hostPlayerId = playerId;
+        addSystemMessage(room.state, `${alias.trim()} is now the host.`);
+      }
+
       socket.join(room.id);
 
       socket.data.roomId = room.id;

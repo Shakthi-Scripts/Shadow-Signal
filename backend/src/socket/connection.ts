@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { getRoom } from "../game/rooms/room.manager.js";
+import { getRoom, deleteRoom } from "../game/rooms/room.manager.js";
 import { checkTurnTimer } from "../game/flow/turn.manager.js";
 import { checkVotingTimer } from "../game/flow/voting.manager.js";
 import { processElimination } from "../game/flow/elimination.logic.js";
@@ -38,13 +38,39 @@ export function onConnection(socket: SocketType) {
         const player = room.state.players.get(socket.data.playerId);
         if (player) {
           player.connected = false;
+          addSystemMessage(room.state, `${player.name.trim()} left the room.`);
           
           // If in lobby, remove player
           if (room.state.phase === "lobby") {
             room.state.players.delete(socket.data.playerId);
-            
+            // If this was the only player in the room, schedule room deletion after 1 minute
+            if (room.state.players.size === 0) {
+              setTimeout(() => {
+                // Re-check the room to see if there are any active players
+                const currentRoom = getRoom(roomId);
+                if (currentRoom) {
+                  const hasActivePlayers = Array.from(currentRoom.state.players.values()).some(
+                    p => p.connected
+                  );
+                  if (!hasActivePlayers) {
+                    console.log(`Deleting empty room: ${roomId}`);
+                    deleteRoom(roomId);
+                  }
+                }
+              }, 60000); // 1 minute = 60000ms
+            }
           }
-          addSystemMessage(room.state, `${player.name.trim()} left the room.`);
+
+          // If the player is the host, find a new host
+          if(room.state.hostPlayerId === player.id) {
+            //find a new host
+            const newHost = Array.from(room.state.players.values()).find(p => p.id !== player.id && p.alive && p.connected);
+            if(newHost) {
+              room.state.hostPlayerId = newHost.id;
+              addSystemMessage(room.state, `${player.name.trim()} is no longer the host. ${newHost.name.trim()} is now the host.`);
+            }
+          }
+
           io.to(roomId).emit("room:state", serializeGameState(room.state, player.id))
         }
       }

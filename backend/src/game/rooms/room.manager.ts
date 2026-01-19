@@ -31,6 +31,14 @@ export function getAllRooms(): GameRoom[] {
   return Array.from(rooms.values());
 }
 
+export function deleteRoom(roomId: string) {
+  const room = rooms.get(roomId);
+  if (room) {
+    inviteCodes.delete(room.state.inviteCode);
+    rooms.delete(roomId);
+  }
+}
+
 function generateInviteCode(length = 5): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   const array = new Uint8Array(length);
