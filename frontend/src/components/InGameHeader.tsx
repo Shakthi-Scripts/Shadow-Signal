@@ -44,7 +44,7 @@ export default function InGameHeader({
       </div>
 
       <p className="max-w-full text-sm font-bold tracking-wide text-white uppercase sm:text-base sm:tracking-[0.35em]">
-        CURRENTLY TRANSMITTING:
+        CURRENTLY TYPING:
         <span className="mt-1 block font-bold tracking-widest text-emerald-400 sm:ml-2 sm:inline">
           {currentPlayer || "WAITING..."}
         </span>

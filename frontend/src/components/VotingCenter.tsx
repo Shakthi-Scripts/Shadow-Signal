@@ -11,6 +11,7 @@ interface VotingCenterProps {
   playerId: string | null;
   votesRevealed: boolean;
   voteTally: Record<string, number>;
+  currentPlayerAlive?: boolean;
 }
 
 export default function VotingCenter({
@@ -21,6 +22,7 @@ export default function VotingCenter({
   playerId,
   votesRevealed,
   voteTally,
+  currentPlayerAlive = true,
 }: VotingCenterProps) {
   return (
     <main className="flex flex-1 flex-col items-center px-4 sm:px-10">
@@ -55,6 +57,13 @@ export default function VotingCenter({
         </div>
       </div>
 
+      {!currentPlayerAlive && (
+        <div className="mt-8 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3">
+          <p className="text-center text-sm text-red-400">
+            You have been eliminated and cannot vote.
+          </p>
+        </div>
+      )}
       <div className="mt-10 grid w-full max-w-4xl grid-cols-2 gap-4 sm:mt-14 sm:grid-cols-3 sm:gap-6">
         {players
           .filter((p) => p.id !== playerId)
@@ -67,9 +76,17 @@ export default function VotingCenter({
               <button
                 key={player.id}
                 onClick={() =>
-                  !votesRevealed && !isEliminated && onVote(player.id)
+                  !votesRevealed &&
+                  !isEliminated &&
+                  currentPlayerAlive &&
+                  onVote(player.id)
                 }
-                disabled={votesRevealed || isEliminated || !!selectedTarget}
+                disabled={
+                  votesRevealed ||
+                  isEliminated ||
+                  !!selectedTarget ||
+                  !currentPlayerAlive
+                }
                 className={`min-w-0 rounded-lg border px-4 py-4 text-left transition ${
                   isSelected
                     ? "border-red-500/60 bg-red-500/10"

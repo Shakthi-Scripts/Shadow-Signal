@@ -17,7 +17,7 @@ export default function VotingChat({
   message,
   setMessage,
 }: VotingChatProps) {
-  const { gameState } = useGame();
+  const { gameState, playerId } = useGame();
 
   const getPlayerName = (playerId: string) => {
     if (gameState?.players[playerId]) {
@@ -25,19 +25,15 @@ export default function VotingChat({
     }
     return playerId.substring(0, 12);
   };
-  const handleSend = () => {
-    if (!message.trim()) return;
-    onSendMessage();
-  };
 
-  const formatTime = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("en-US", {
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+  // Check if chat is allowed (alive players can chat during voting)
+  const currentPlayer = gameState?.players[playerId || ""];
+  const isAlive = currentPlayer?.alive ?? false;
+  const canChat = isAlive && gameState?.phase === "voting";
+
+  const handleSend = () => {
+    if (!message.trim() || !canChat) return;
+    onSendMessage();
   };
 
   const chatMessages = messages.filter((m) => m.type === "chat");
@@ -69,16 +65,21 @@ export default function VotingChat({
           <input
             value={message}
             onChange={(e) => setMessage(e.currentTarget.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && canChat) {
                 handleSend();
               }
             }}
-            placeholder="SEND MESSAGE..."
-            className="flex-1 bg-transparent text-sm text-white placeholder-white/40 outline-none"
+            placeholder={
+              canChat
+                ? "SEND MESSAGE..."
+                : "Eliminated players cannot chat"
+            }
+            disabled={!canChat}
+            className="flex-1 bg-transparent text-sm text-white placeholder-white/40 outline-none disabled:cursor-not-allowed disabled:opacity-50"
           />
-          <button onClick={handleSend} disabled={!message.trim()}>
-            <span className="material-symbols-outlined text-sm text-white">
+          <button onClick={handleSend} disabled={!message.trim() || !canChat}>
+            <span className="material-symbols-outlined text-sm text-white disabled:opacity-50">
               send
             </span>
           </button>
