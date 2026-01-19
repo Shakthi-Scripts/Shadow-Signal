@@ -83,6 +83,18 @@ roomRouter.post("/join", (req, res) => {
       });
     }
 
+    // Check if alias already exists (case-insensitive)
+    const trimmedAlias = alias.trim();
+    const aliasExists = Array.from(room.state.players.values()).some(
+      (p) => p.name.trim().toLowerCase() === trimmedAlias.toLowerCase()
+    );
+    if (aliasExists) {
+      return res.status(400).json({
+        success: false,
+        error: "Alias already exists, join with another alias",
+      });
+    }
+
     // Check if room is full
     const alivePlayers = Array.from(room.state.players.values()).filter(
       (p) => p.alive && p.connected

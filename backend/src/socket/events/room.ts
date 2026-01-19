@@ -44,6 +44,17 @@ export function registerRoomEvents(socket: SocketType) {
           return;
         }
 
+        // Check if alias already exists (case-insensitive)
+        const trimmedAlias = alias.trim();
+        const aliasExists = Array.from(room.state.players.values()).some(
+          (p) => p.name.trim().toLowerCase() === trimmedAlias.toLowerCase()
+        );
+        if (aliasExists) {
+          ack?.({ success: false, reason: "Alias already exists, join with another alias" });
+          socket.emit("error", { message: "Alias already exists, join with another alias" });
+          return;
+        }
+
         // Check max players (12)
         const alivePlayers = Array.from(room.state.players.values()).filter(
           (p) => p.alive && p.connected

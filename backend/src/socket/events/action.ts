@@ -42,6 +42,7 @@ export function registerActionEvents(socket: SocketType) {
         difficulty: payload?.difficulty || "easy",
         roundTimerSeconds: payload?.roundTimerSeconds || room.state.roundTimerSeconds,
         voteTimerSeconds: payload?.voteTimerSeconds || room.state.voteTimerSeconds,
+        maxRounds: payload?.maxRounds || room.state.maxRounds,
       };
 
       await startGame(room.state, config);
@@ -245,4 +246,61 @@ export function registerActionEvents(socket: SocketType) {
   //     socket.emit("error", { message: error.message || "Failed to reveal votes" });
   //   }
   // });
+
+  socket.on("game:config:update", (payload) => {
+    try {
+      const roomId = socket.data.roomId;
+      if (!roomId) {
+        socket.emit("error", { message: "Not in a room" });
+        return;
+      }
+
+      const room = getRoom(roomId);
+      if (!room) {
+        socket.emit("error", { message: "Room not found" });
+        return;
+      }
+
+      // Check if player is host
+      if (room.state.hostPlayerId !== socket.data.playerId) {
+        socket.emit("error", { message: "Only the host can update game config" });
+        return;
+      }
+
+      // Check if game is in lobby
+      if (room.state.phase !== "lobby") {
+        socket.emit("error", { message: "Game config can only be updated in lobby" });
+        return;
+      }
+
+      // Update config fields if provided
+      if (payload.mode !== undefined) {
+        room.state.mode = payload.mode;
+      }
+      if (payload.difficulty !== undefined) {
+        room.state.difficulty = payload.difficulty;
+      }
+      if (payload.roundTimerSeconds !== undefined) {
+        room.state.roundTimerSeconds = payload.roundTimerSeconds;
+      }
+      if (payload.voteTimerSeconds !== undefined) {
+        room.state.voteTimerSeconds = payload.voteTimerSeconds;
+      }
+      if (payload.maxRounds !== undefined) {
+        // Validate maxRounds is between 3 and 12
+        if (payload.maxRounds < 3 || payload.maxRounds > 12) {
+          socket.emit("error", { message: "maxRounds must be between 3 and 12" });
+          return;
+        }
+        room.state.maxRounds = payload.maxRounds;
+      }
+
+      // Broadcast updated state to all players
+      const publicState = serializeGameState(room.state, socket.data.playerId);
+      io.to(roomId).emit("room:state", publicState);
+    } catch (error: any) {
+      console.error("Error updating game config:", error);
+      socket.emit("error", { message: error.message || "Failed to update game config" });
+    }
+  });
 }

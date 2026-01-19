@@ -7,7 +7,8 @@ export interface ClientToServerEvents {
   ) => void;
   "room:leave": () => void;
 
-  "game:start": (payload?: { mode?: "infiltrator" | "spy"; difficulty?: "easy" | "hard"; roundTimerSeconds?: number; voteTimerSeconds?: number }) => void;
+  "game:start": (payload?: { mode?: "infiltrator" | "spy"; difficulty?: "easy" | "hard"; roundTimerSeconds?: number; voteTimerSeconds?: number; maxRounds?: number }) => void;
+  "game:config:update": (payload: { mode?: "infiltrator" | "spy"; difficulty?: "easy" | "hard"; roundTimerSeconds?: number; voteTimerSeconds?: number; maxRounds?: number }) => void;
   "turn:end": () => void;
   "chat:send": (payload: { content: string }) => void;
 
