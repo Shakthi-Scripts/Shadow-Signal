@@ -60,7 +60,7 @@ export class AIService {
       }
 
       const data = await response.json();
-      const spyWord = data.choices[0]?.message?.content?.trim();
+      const spyWord = "test"; // TODO: remove this
 
       if (spyWord && spyWord.length > 0) {
         return spyWord;
