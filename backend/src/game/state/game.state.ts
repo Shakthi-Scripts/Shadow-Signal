@@ -33,8 +33,8 @@ export type GameState = {
   maxRounds: number;
   maxPlayers: number; // Maximum number of players allowed in the room
   players: PlayerMap;
-  speakingOrder: PlayerId[]; // Order in which players will speak
-  currentTurnIndex: number; // Index in speakingOrder for current speaker
+  speakingOrder: PlayerId[]; // Order in which players will type
+  currentTurnIndex: number; // Index in speakingOrder for current typer
   turn: turn | null;
   voteType: "secret" | "public";
   votes: VoteState | null;
@@ -43,7 +43,7 @@ export type GameState = {
   version: number; // optimistic concurrency
   lastUpdatedAt: number;
   hostId: PlayerId; // Host player ID
-  roundTimerSeconds: number; // Duration of each speaking turn
+  roundTimerSeconds: number; // Duration of each typing turn
   voteTimerSeconds: number; // Duration of voting phase
   difficulty: "easy" | "hard";
 };

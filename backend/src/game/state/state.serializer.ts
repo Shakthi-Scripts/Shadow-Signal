@@ -35,6 +35,11 @@ export function serializeGameState(
     maxRounds: state.maxRounds,
     maxPlayers: state.maxPlayers,
     turn: state.turn || null,
+    votes: state.votes
+      ? {
+          endsAt: state.votes.endsAt,
+        }
+      : null,
     players: publicPlayers,
     eliminatedPlayers: state.eliminatedPlayers || {},
     messages: state.messages as [(typeof state.messages)[0]],

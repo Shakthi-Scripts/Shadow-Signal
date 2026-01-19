@@ -33,6 +33,10 @@ export interface PublicPlayer {
   connected: boolean;
 }
 
+export type PublicVoteState = {
+  endsAt: number;
+};
+
 export interface PublicGameState {
   roomId: RoomId;
   mode: mode;
@@ -42,6 +46,7 @@ export interface PublicGameState {
   maxRounds: number;
   maxPlayers: number; // Maximum number of players allowed in the room
   turn: turn | null;
+  votes: PublicVoteState | null;
   players: Record<PlayerId, PublicPlayer>;
   eliminatedPlayers: Record<PlayerId, eliminatedPlayer> | null;
   messages: [message];
