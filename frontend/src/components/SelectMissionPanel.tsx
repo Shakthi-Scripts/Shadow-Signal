@@ -2,20 +2,25 @@
 import { Dispatch, SetStateAction } from "react";
 import {
   difficulty,
-  GameStateType,
+  GameConfigType,
   mode,
   roundTimerS,
   voteTimeS,
-} from "../game/[inviteCode]/page";
+} from "@/app/game/[inviteCode]/page";
+import { useGame } from "@/contexts/GameContext";
 
 type SelectMissionPanelProps = {
-  gameState: GameStateType;
-  setGameState: Dispatch<SetStateAction<GameStateType>>;
+  gameConfig: GameConfigType;
+  setGameState: Dispatch<SetStateAction<GameConfigType>>;
+  onStartGame?: () => void;
+  isHost?: boolean;
 };
 
 export default function SelectMissionPanel({
-  gameState,
+  gameConfig,
   setGameState,
+  onStartGame,
+  isHost = false,
 }: SelectMissionPanelProps) {
   const handleSetMode = (mode: mode) =>
     setGameState((prev) => ({ ...prev, mode }));
@@ -25,6 +30,8 @@ export default function SelectMissionPanel({
     setGameState((prev) => ({ ...prev, roundTimerS }));
   const handleSetVoteTimer = (voteTimeS: voteTimeS) =>
     setGameState((prev) => ({ ...prev, voteTimeS }));
+
+  const { gameState } = useGame()
 
   return (
     <main className="mt-6 h-full w-full flex-1 overflow-y-auto bg-black/20 p-6 lg:w-[56%]">
@@ -41,7 +48,7 @@ export default function SelectMissionPanel({
         <div
           onClick={() => handleSetMode("infiltrator")}
           className={`cursor-pointer rounded-md border p-6 transition-all ${
-            gameState.mode === "infiltrator"
+            gameConfig.mode === "infiltrator"
               ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
               : "border-white/10 bg-black/30 hover:border-white/30"
           }`}
@@ -59,7 +66,7 @@ export default function SelectMissionPanel({
         <div
           onClick={() => handleSetMode("spy")}
           className={`cursor-pointer rounded-md border p-6 transition-all ${
-            gameState.mode === "spy"
+            gameConfig.mode === "spy"
               ? "border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
               : "border-white/10 bg-black/30 hover:border-white/30"
           }`}
@@ -79,17 +86,17 @@ export default function SelectMissionPanel({
           <div className="flex gap-2">
             <OptionButton
               label="60s"
-              isActive={gameState.roundTimerS === 60}
+              isActive={gameConfig.roundTimerS === 60}
               onClick={() => handleSetRoundTimer(60)}
             />
             <OptionButton
               label="90s"
-              isActive={gameState.roundTimerS === 90}
+              isActive={gameConfig.roundTimerS === 90}
               onClick={() => handleSetRoundTimer(90)}
             />
             <OptionButton
               label="120s"
-              isActive={gameState.roundTimerS === 120}
+              isActive={gameConfig.roundTimerS === 120}
               onClick={() => handleSetRoundTimer(120)}
             />
           </div>
@@ -100,12 +107,12 @@ export default function SelectMissionPanel({
           <div className="flex gap-2">
             <OptionButton
               label="Easy"
-              isActive={gameState.difficulty === "easy"}
+              isActive={gameConfig.difficulty === "easy"}
               onClick={() => handleSetDifficulty("easy")}
             />
             <OptionButton
               label="Hard"
-              isActive={gameState.difficulty === "hard"}
+              isActive={gameConfig.difficulty === "hard"}
               onClick={() => handleSetDifficulty("hard")}
             />
           </div>
@@ -116,17 +123,17 @@ export default function SelectMissionPanel({
           <div className="flex gap-2">
             <OptionButton
               label="20s"
-              isActive={gameState.voteTimeS === 20}
+              isActive={gameConfig.voteTimeS === 20}
               onClick={() => handleSetVoteTimer(20)}
             />
             <OptionButton
               label="30s"
-              isActive={gameState.voteTimeS === 30}
+              isActive={gameConfig.voteTimeS === 30}
               onClick={() => handleSetVoteTimer(30)}
             />
             <OptionButton
               label="40s"
-              isActive={gameState.voteTimeS === 40}
+              isActive={gameConfig.voteTimeS === 40}
               onClick={() => handleSetVoteTimer(40)}
             />
           </div>
@@ -139,7 +146,11 @@ export default function SelectMissionPanel({
           <p className="text-xs text-emerald-400">Ready for signal launch</p>
         </div>
 
-        <button className="rounded-md bg-emerald-500 px-6 py-3 text-sm font-semibold text-black">
+        <button
+          onClick={onStartGame}
+          disabled={!isHost || !onStartGame || gameState?.players && Object.keys(gameState.players).length < 3 }
+          className="rounded-md bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
           START GAME
         </button>
       </div>

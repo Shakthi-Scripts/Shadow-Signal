@@ -1,13 +1,43 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import { useGame } from "@/contexts/GameContext";
+import type { message } from "@/types/game";
 
-export default function InGameTacticalFeed() {
-  const [message, setMessage] = useState("");
+interface InGameTacticalFeedProps {
+  messages: message[];
+  onSendMessage: () => void;
+  message: string;
+  setMessage: (msg: string) => void;
+}
+
+export default function InGameTacticalFeed({
+  messages,
+  onSendMessage,
+  message,
+  setMessage,
+}: InGameTacticalFeedProps) {
+  const { gameState } = useGame();
 
   const handleSend = () => {
-    if (!message.trim()) return;
-    console.log("FEED:", message);
-    setMessage("");
+    if (message.trim().length === 0) return;
+    onSendMessage();
+  };
+
+  const formatTime = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString("en-US", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
+  const getPlayerName = (playerId: string) => {
+    if (gameState?.players[playerId]) {
+      return gameState.players[playerId].name;
+    }
+    return playerId.substring(0, 12);
   };
 
   return (
@@ -19,41 +49,31 @@ export default function InGameTacticalFeed() {
       </div>
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 text-sm text-white/70">
-        <p>
-          <span className="mr-2 text-xs text-white/30">14:02:31</span>
-          <span className="text-emerald-400">SYSTEM:</span> Speaking order
-          randomized for Round 2.
-        </p>
-        <p>
-          <span className="mr-2 text-xs text-white/30">14:02:45</span>
-          <span className="text-emerald-400">SYSTEM:</span> Player_01 finished
-          transmission.
-        </p>
-        <p>
-          <span className="mr-2 text-xs text-white/30">14:03:02</span>
-          <span className="text-emerald-400">SYSTEM:</span> Player_02 finished
-          transmission.
-        </p>
-        <p>
-          <span className="mr-2 text-xs text-white/30">14:03:15</span>
-          <span className="text-emerald-400">SYSTEM:</span> Player_03 finished
-          transmission.
-        </p>
-
-        <div className="border-l-2 border-emerald-400 bg-emerald-400/10 px-3 py-2 text-white">
-          <span className="mr-2 text-xs text-white/40">14:03:30</span>
-          <span className="font-semibold">PLAYER_04</span> began transmission.
-        </div>
-
-        <div className="rounded-md bg-white/5 px-3 py-2">
-          <p className="text-xs tracking-widest text-white/40">XENON_GHOST</p>
-          <p className="text-white">Wait, what did he say about the relay?</p>
-        </div>
-
-        <div className="rounded-md bg-white/5 px-3 py-2">
-          <p className="text-xs tracking-widest text-white/40">VOID_WALKER</p>
-          <p className="text-white">Suspect. Nebula wasn&apos;t mentioned.</p>
-        </div>
+        {messages.length === 0 ? (
+          <p className="text-white/40">No messages yet.</p>
+        ) : (
+          messages.map((msg) => {
+            if (msg.type === "system") {
+              return (
+                <p key={msg.id}>
+                  <span className="mr-2 text-xs text-white/30">
+                    {formatTime(msg.timestamp)}
+                  </span>
+                  <span className="text-emerald-400">SYSTEM:</span> {msg.content}
+                </p>
+              );
+            } else {
+              return (
+                <div key={msg.id} className="rounded-md bg-white/5 px-3 py-2">
+                  <p className="text-xs tracking-widest text-white/40">
+                    {getPlayerName(msg.from)}
+                  </p>
+                  <p className="text-white">{msg.content}</p>
+                </div>
+              );
+            }
+          })
+        )}
       </div>
 
       <div className="shrink-0 border-t border-white/10 p-3">

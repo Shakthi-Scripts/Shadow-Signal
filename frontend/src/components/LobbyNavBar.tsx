@@ -33,7 +33,7 @@ export default function LobbyNavBar({ inviteCode }: LobbyNavBarProps) {
           </div>
 
           <button className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-white/70 transition hover:border-white/30 hover:text-white sm:h-9 sm:w-9">
-            ⚙
+            <span className="material-symbols-outlined">content_copy</span>
           </button>
 
           <div className="h-8 w-8 overflow-hidden rounded-md border border-white/10 bg-black/40 sm:h-9 sm:w-9">

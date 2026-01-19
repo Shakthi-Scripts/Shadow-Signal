@@ -1,6 +1,20 @@
-import React from "react";
+"use client";
 
-export default function VotingRightPanel() {
+import React from "react";
+import { useGame } from "@/contexts/GameContext";
+
+interface VotingRightPanelProps {
+  votesCast: number;
+  totalPlayers: number;
+}
+
+export default function VotingRightPanel({
+  votesCast,
+  totalPlayers,
+}: VotingRightPanelProps) {
+  const { gameState, playerWord } = useGame();
+  const voteProgress = totalPlayers > 0 ? (votesCast / totalPlayers) * 100 : 0;
+
   return (
     <aside className="flex w-full flex-col border-t border-white/10 px-6 py-8 lg:w-80 lg:border-t-0 lg:border-l">
       <div className="space-y-8">
@@ -10,12 +24,16 @@ export default function VotingRightPanel() {
           </p>
 
           <div className="space-y-4">
-            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-4 py-3">
-              <p className="text-[10px] tracking-widest text-emerald-400">
-                CURRENT ROUND
-              </p>
-              <p className="mt-1 text-xl font-semibold text-white">04 / 06</p>
-            </div>
+            {gameState && (
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-4 py-3">
+                <p className="text-[10px] tracking-widest text-emerald-400">
+                  CURRENT ROUND
+                </p>
+                <p className="mt-1 text-xl font-semibold text-white">
+                  {gameState.round} / {gameState.maxRounds}
+                </p>
+              </div>
+            )}
 
             <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3">
               <p className="text-[10px] tracking-widest text-red-400">
@@ -34,11 +52,16 @@ export default function VotingRightPanel() {
           <div className="rounded-lg border border-white/10 bg-white/5 px-4 py-3">
             <div className="mb-2 flex items-center justify-between text-sm text-white">
               <span>Votes Cast</span>
-              <span className="font-semibold">4 / 5</span>
+              <span className="font-semibold">
+                {votesCast} / {totalPlayers}
+              </span>
             </div>
 
             <div className="h-2 w-full rounded-full bg-white/10">
-              <div className="h-full w-[80%] rounded-full bg-emerald-400" />
+              <div
+                className="h-full rounded-full bg-emerald-400 transition-all"
+                style={{ width: `${voteProgress}%` }}
+              />
             </div>
           </div>
         </div>
@@ -50,7 +73,7 @@ export default function VotingRightPanel() {
         </p>
 
         <p className="mt-2 text-lg font-semibold tracking-widest text-white">
-          &quot;BEACH&quot;
+          &quot;{playerWord || "NONE"}&quot;
         </p>
 
         <p className="mt-2 text-xs text-white/40">

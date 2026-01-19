@@ -13,11 +13,17 @@ export default function CreateRoom() {
     if (alias.length === 0) return;
     try {
       setIsCreatingRoom(true);
-      const res = await api.createRoom(alias);
-      const inviteCode = res?.data.inviteCode;
-      router.push(`/game/${inviteCode}`);
+      const result = await api.createRoom(alias);
+      if (result.success && result.inviteCode && result.playerId) {
+        localStorage.setItem("playerAlias", alias);
+        localStorage.setItem("playerId", result.playerId);
+        router.push(`/game/${result.inviteCode}`);
+      } else {
+        alert(result.error || "Failed to create room");
+      }
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      alert("Failed to create room");
     } finally {
       setIsCreatingRoom(false);
     }

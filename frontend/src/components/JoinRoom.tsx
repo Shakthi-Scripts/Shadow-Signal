@@ -9,7 +9,19 @@ export default function JoinRoom() {
 
   const handleJoinRoom = async () => {
     if (accessCode?.length === 0 || alias?.length === 0) return;
-    await api.joinRoom(accessCode, alias);
+    try {
+      const result = await api.joinRoom(accessCode, alias);
+      if (result.success && result.inviteCode && result.playerId) {
+        localStorage.setItem("playerAlias", alias);
+        localStorage.setItem("playerId", result.playerId)
+        window.location.href = `/game/${result.inviteCode}`;
+      } else {
+        alert(result.error || "Failed to join room");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to join room");
+    }
   };
 
   return (
