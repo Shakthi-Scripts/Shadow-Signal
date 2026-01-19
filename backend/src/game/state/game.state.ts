@@ -31,6 +31,7 @@ export type GameState = {
   phase: phase;
   round: number;
   maxRounds: number;
+  maxPlayers: number; // Maximum number of players allowed in the room
   players: PlayerMap;
   speakingOrder: PlayerId[]; // Order in which players will speak
   currentTurnIndex: number; // Index in speakingOrder for current speaker

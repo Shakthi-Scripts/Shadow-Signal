@@ -40,6 +40,7 @@ export interface GameConfigType {
   difficulty: difficulty;
   voteTimeS: voteTimeS;
   maxRounds: maxRounds;
+  maxPlayers: number;
 }
 
 const defaultGameConfig: GameConfigType = {
@@ -48,6 +49,7 @@ const defaultGameConfig: GameConfigType = {
   difficulty: "easy",
   voteTimeS: 30,
   maxRounds: 6,
+  maxPlayers: 12,
 };
 
 export default function GamePage() {
@@ -167,6 +169,7 @@ export default function GamePage() {
             (state.roundTimerSeconds as roundTimerS) ?? prev.roundTimerS,
           voteTimeS: (state.voteTimerSeconds as voteTimeS) ?? prev.voteTimeS,
           maxRounds: (state.maxRounds as maxRounds) ?? prev.maxRounds,
+          maxPlayers: state.maxPlayers ?? prev.maxPlayers,
         }));
       }
       if (state.phase === "voting") {
@@ -323,6 +326,7 @@ export default function GamePage() {
                 roundTimerSeconds: config.roundTimerS,
                 voteTimerSeconds: config.voteTimeS,
                 maxRounds: config.maxRounds,
+                maxPlayers: config.maxPlayers,
               });
             }}
           />

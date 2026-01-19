@@ -19,7 +19,7 @@ export default function CreateRoom() {
     setAliasError("");
     try {
       setIsCreatingRoom(true);
-      const result = await api.createRoom(alias);
+      const result = await api.createRoom(alias, 12);
       if (result.success && result.inviteCode && result.playerId) {
         localStorage.setItem("playerAlias", alias);
         localStorage.setItem("playerId", result.playerId);

@@ -20,6 +20,7 @@ export interface ClientToServerEvents {
     roundTimerSeconds?: number;
     voteTimerSeconds?: number;
     maxRounds?: number;
+    maxPlayers?: number;
   }) => void;
   "turn:end": () => void;
   "chat:send": (payload: { content: string }) => void;

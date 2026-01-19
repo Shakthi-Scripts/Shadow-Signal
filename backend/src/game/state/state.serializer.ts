@@ -33,6 +33,7 @@ export function serializeGameState(
     phase: state.phase,
     round: state.round,
     maxRounds: state.maxRounds,
+    maxPlayers: state.maxPlayers,
     turn: state.turn || null,
     players: publicPlayers,
     eliminatedPlayers: state.eliminatedPlayers || {},

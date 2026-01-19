@@ -12,6 +12,7 @@ class API {
 
   async createRoom(
     alias: string,
+    maxPlayers: number = 12,
   ): Promise<{
     success: boolean;
     inviteCode?: string;
@@ -19,7 +20,10 @@ class API {
     error?: string;
   }> {
     try {
-      const res = await this.api.post("/api/room/create", { alias });
+      const res = await this.api.post("/api/room/create", {
+        alias,
+        maxPlayers,
+      });
       const data = res.data;
       if (data.success === true) {
         return {

@@ -20,13 +20,14 @@ export default function LobbyLeftPanel() {
 
   const players = Object.values(gameState.players).filter((p) => p.connected);
   const alivePlayers = players.filter((p) => p.alive);
+  const maxPlayers = gameState.maxPlayers || 12;
 
   return (
     <aside className="mt-6 h-full w-full min-w-60 overflow-y-auto border-r border-white/10 bg-black/20 p-4 lg:w-[22%]">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-white">PERSONNEL</h2>
         <p className="text-sm text-emerald-400">
-          ACTIVE LINKS: {players.length} / 12
+          ACTIVE LINKS: {players.length} / {maxPlayers}
         </p>
       </div>
 

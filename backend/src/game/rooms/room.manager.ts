@@ -5,14 +5,14 @@ import { createInitialState } from "../state/state.factory.js";
 const rooms = new Map<string, GameRoom>();
 const inviteCodes = new Map<string, string>();
 
-export function createRoom(alias: string) {
+export function createRoom(alias: string, maxPlayers: number = 12) {
   const roomId = uuidV4();
   const playerId = uuidV4();
   const inviteCode = generateInviteCode();
   inviteCodes.set(inviteCode, roomId);
   const room: GameRoom = {
     id: roomId,
-    state: createInitialState(roomId, playerId, alias, inviteCode),
+    state: createInitialState(roomId, playerId, alias, inviteCode, maxPlayers),
   };
   rooms.set(roomId, room);
   return { inviteCode, playerId };

@@ -39,6 +39,7 @@ export interface PublicGameState {
   phase: phase;
   round: number;
   maxRounds: number;
+  maxPlayers: number; // Maximum number of players allowed in the room
   turn: turn;
   hostPlayerId: PlayerId;
   players: Record<PlayerId, PublicPlayer>;

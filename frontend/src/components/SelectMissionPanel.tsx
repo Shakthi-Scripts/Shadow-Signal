@@ -61,8 +61,21 @@ export default function SelectMissionPanel({
       onConfigUpdate(newConfig);
     }
   };
+  const handleSetMaxPlayers = (maxPlayers: number) => {
+    const newConfig = { ...gameConfig, maxPlayers };
+    setGameState(newConfig);
+    if (isHost && onConfigUpdate) {
+      onConfigUpdate(newConfig);
+    }
+  };
 
   const { gameState } = useGame();
+  const connectedPlayersCount = gameState
+    ? Object.values(gameState.players).filter((p) => p.connected).length
+    : 0;
+  const maxPlayersExceeded = Boolean(
+    gameState && connectedPlayersCount > gameConfig.maxPlayers,
+  );
 
   return (
     <main className="mt-6 h-full w-full flex-1 overflow-y-auto bg-black/20 p-6 lg:w-[56%]">
@@ -196,6 +209,27 @@ export default function SelectMissionPanel({
             ))}
           </div>
         </div>
+
+        <div>
+          <p className="mb-2 text-xs text-white/60">MAX PLAYERS</p>
+          <select
+            value={gameConfig.maxPlayers}
+            onChange={(e) => handleSetMaxPlayers(Number(e.target.value))}
+            disabled={!isHost}
+            className={cn(
+              "w-full rounded-md border px-4 py-1.5 text-xs text-white transition-all",
+              !isHost && "cursor-not-allowed border-white/10 bg-black/30",
+              isHost &&
+                "cursor-pointer border-white/10 bg-black/30 hover:border-white/30 focus:border-emerald-400/60 focus:outline-none",
+            )}
+          >
+            {Array.from({ length: 10 }, (_, i) => i + 3).map((num) => (
+              <option key={num} value={num} className="bg-black/90">
+                {num}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center">
@@ -204,20 +238,36 @@ export default function SelectMissionPanel({
           <p className="text-xs text-emerald-400">Ready for signal launch</p>
         </div>
 
-        <button
-          onClick={onStartGame}
-          disabled={
-            !isHost ||
-            !onStartGame ||
-            (gameState?.players && Object.keys(gameState.players).length < 3)
-          }
-          className={cn(
-            "rounded-md bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400",
-            "disabled:cursor-not-allowed disabled:opacity-30",
+        <div className="relative">
+          <button
+            onClick={onStartGame}
+            disabled={
+              !isHost ||
+              !onStartGame ||
+              (gameState?.players &&
+                Object.keys(gameState.players).length < 3) ||
+              maxPlayersExceeded
+            }
+            className={cn(
+              "rounded-md bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400",
+              "disabled:cursor-not-allowed disabled:opacity-30",
+            )}
+            title={
+              maxPlayersExceeded
+                ? `Max players exceeded. Current players: ${connectedPlayersCount}, Max: ${gameConfig.maxPlayers}`
+                : undefined
+            }
+          >
+            START GAME
+          </button>
+          {maxPlayersExceeded && (
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2 rounded-md bg-red-600 px-3 py-2 text-xs whitespace-nowrap text-white shadow-lg">
+              Max players exceeded ({connectedPlayersCount}/
+              {gameConfig.maxPlayers})
+              <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-red-600"></div>
+            </div>
           )}
-        >
-          START GAME
-        </button>
+        </div>
       </div>
     </main>
   );

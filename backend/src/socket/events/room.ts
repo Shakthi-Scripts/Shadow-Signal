@@ -73,11 +73,11 @@ export function registerRoomEvents(socket: SocketType) {
           return;
         }
 
-        // Check max players (12)
+        // Check max players
         const alivePlayers = Array.from(room.state.players.values()).filter(
           (p) => p.alive && p.connected,
         );
-        if (alivePlayers.length >= 12) {
+        if (alivePlayers.length >= room.state.maxPlayers) {
           ack?.({ success: false, reason: "Room is full" });
           socket.emit("error", { message: "Room is full" });
           return;

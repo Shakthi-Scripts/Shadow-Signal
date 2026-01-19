@@ -10,7 +10,7 @@ const roomRouter = Router();
 
 roomRouter.post("/create", (req, res) => {
   try {
-    const { alias } = req.body;
+    const { alias, maxPlayers } = req.body;
 
     // Validate input
     if (!alias || typeof alias !== "string" || alias.trim().length === 0) {
@@ -27,7 +27,21 @@ roomRouter.post("/create", (req, res) => {
       });
     }
 
-    const { inviteCode, playerId } = createRoom(alias.trim());
+    // Validate maxPlayers
+    const maxPlayersNum = maxPlayers ? Number(maxPlayers) : 12;
+    if (
+      isNaN(maxPlayersNum) ||
+      maxPlayersNum < 3 ||
+      maxPlayersNum > 12 ||
+      !Number.isInteger(maxPlayersNum)
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "maxPlayers must be an integer between 3 and 12",
+      });
+    }
+
+    const { inviteCode, playerId } = createRoom(alias.trim(), maxPlayersNum);
 
     res.json({
       success: true,
@@ -103,7 +117,7 @@ roomRouter.post("/join", (req, res) => {
     const alivePlayers = Array.from(room.state.players.values()).filter(
       (p) => p.alive && p.connected,
     );
-    if (alivePlayers.length >= 12) {
+    if (alivePlayers.length >= room.state.maxPlayers) {
       return res.status(400).json({
         success: false,
         error: "Room is full",
