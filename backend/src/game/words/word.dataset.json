@@ -1,0 +1,207 @@
+{
+  "domains": [
+    {
+      "name": "Food & Cuisine",
+      "words": [
+        {
+          "word": "Pizza",
+          "similar": ["Pasta", "Burger", "Sandwich", "Taco", "Sushi"]
+        },
+        {
+          "word": "Coffee",
+          "similar": ["Tea", "Espresso", "Cappuccino", "Latte", "Mocha"]
+        },
+        {
+          "word": "Chocolate",
+          "similar": ["Candy", "Caramel", "Fudge", "Brownie", "Truffle"]
+        },
+        {
+          "word": "Salad",
+          "similar": ["Soup", "Appetizer", "Side dish", "Coleslaw", "Caesar"]
+        },
+        {
+          "word": "Bread",
+          "similar": ["Roll", "Baguette", "Loaf", "Bun", "Toast"]
+        },
+        {
+          "word": "Ice Cream",
+          "similar": ["Frozen yogurt", "Gelato", "Sorbet", "Milkshake", "Sundae"]
+        }
+      ]
+    },
+    {
+      "name": "Animals",
+      "words": [
+        {
+          "word": "Dog",
+          "similar": ["Cat", "Wolf", "Fox", "Puppy", "Husky"]
+        },
+        {
+          "word": "Elephant",
+          "similar": ["Rhino", "Hippo", "Giraffe", "Mammoth", "Buffalo"]
+        },
+        {
+          "word": "Eagle",
+          "similar": ["Hawk", "Falcon", "Owl", "Vulture", "Condor"]
+        },
+        {
+          "word": "Dolphin",
+          "similar": ["Whale", "Shark", "Seal", "Porpoise", "Orca"]
+        },
+        {
+          "word": "Lion",
+          "similar": ["Tiger", "Leopard", "Cheetah", "Panther", "Jaguar"]
+        },
+        {
+          "word": "Penguin",
+          "similar": ["Seal", "Puffin", "Albatross", "Seagull", "Pelican"]
+        }
+      ]
+    },
+    {
+      "name": "Sports & Activities",
+      "words": [
+        {
+          "word": "Soccer",
+          "similar": ["Football", "Basketball", "Hockey", "Rugby", "Volleyball"]
+        },
+        {
+          "word": "Swimming",
+          "similar": ["Diving", "Surfing", "Kayaking", "Snorkeling", "Water polo"]
+        },
+        {
+          "word": "Tennis",
+          "similar": ["Badminton", "Squash", "Ping pong", "Racquetball", "Pickleball"]
+        },
+        {
+          "word": "Running",
+          "similar": ["Jogging", "Sprinting", "Marathon", "Track", "Cycling"]
+        },
+        {
+          "word": "Yoga",
+          "similar": ["Pilates", "Meditation", "Stretching", "Tai chi", "Aerobics"]
+        },
+        {
+          "word": "Golf",
+          "similar": ["Mini golf", "Putting", "Driving range", "Tee", "Course"]
+        }
+      ]
+    },
+    {
+      "name": "Entertainment",
+      "words": [
+        {
+          "word": "Movie",
+          "similar": ["Film", "Cinema", "Theater", "Show", "Documentary"]
+        },
+        {
+          "word": "Concert",
+          "similar": ["Festival", "Gig", "Performance", "Recital", "Show"]
+        },
+        {
+          "word": "Video game",
+          "similar": ["Board game", "Card game", "Mobile game", "Console", "PC game"]
+        },
+        {
+          "word": "Netflix",
+          "similar": ["Streaming", "TV show", "Series", "Binge-watch", "Episode"]
+        },
+        {
+          "word": "Book",
+          "similar": ["Novel", "Story", "Chapter", "Page", "Library"]
+        },
+        {
+          "word": "Music",
+          "similar": ["Song", "Album", "Playlist", "Track", "Beat"]
+        }
+      ]
+    },
+    {
+      "name": "Travel & Places",
+      "words": [
+        {
+          "word": "Beach",
+          "similar": ["Ocean", "Coast", "Shore", "Island", "Resort"]
+        },
+        {
+          "word": "Mountain",
+          "similar": ["Hill", "Peak", "Summit", "Valley", "Cliff"]
+        },
+        {
+          "word": "Hotel",
+          "similar": ["Motel", "Resort", "Hostel", "Inn", "Lodge"]
+        },
+        {
+          "word": "Airport",
+          "similar": ["Terminal", "Flight", "Airplane", "Runway", "Gate"]
+        },
+        {
+          "word": "City",
+          "similar": ["Town", "Metropolis", "Urban", "Downtown", "Street"]
+        },
+        {
+          "word": "Forest",
+          "similar": ["Woods", "Jungle", "Trees", "Trail", "Nature"]
+        }
+      ]
+    },
+    {
+      "name": "Technology",
+      "words": [
+        {
+          "word": "Computer",
+          "similar": ["Laptop", "Desktop", "PC", "Mac", "Device"]
+        },
+        {
+          "word": "Phone",
+          "similar": ["Smartphone", "Mobile", "Cell", "Device", "Call"]
+        },
+        {
+          "word": "Internet",
+          "similar": ["Web", "Online", "Network", "WiFi", "Connection"]
+        },
+        {
+          "word": "App",
+          "similar": ["Application", "Software", "Program", "Tool", "Platform"]
+        },
+        {
+          "word": "Email",
+          "similar": ["Message", "Inbox", "Mail", "Send", "Account"]
+        },
+        {
+          "word": "Camera",
+          "similar": ["Photo", "Picture", "Snapshot", "Lens", "Shoot"]
+        }
+      ]
+    },
+    {
+      "name": "Nature & Weather",
+      "words": [
+        {
+          "word": "Rain",
+          "similar": ["Storm", "Shower", "Drizzle", "Cloud", "Wet"]
+        },
+        {
+          "word": "Sun",
+          "similar": ["Sunshine", "Bright", "Day", "Light", "Warm"]
+        },
+        {
+          "word": "Snow",
+          "similar": ["Ice", "Cold", "Winter", "Frost", "Flake"]
+        },
+        {
+          "word": "Tree",
+          "similar": ["Branch", "Leaf", "Trunk", "Forest", "Nature"]
+        },
+        {
+          "word": "Flower",
+          "similar": ["Bloom", "Petals", "Garden", "Rose", "Plant"]
+        },
+        {
+          "word": "River",
+          "similar": ["Stream", "Water", "Flow", "Bank", "Bridge"]
+        }
+      ]
+    }
+  ]
+}

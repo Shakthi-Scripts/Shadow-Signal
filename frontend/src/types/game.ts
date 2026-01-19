@@ -5,14 +5,14 @@ export type chatType = "chat" | "system" | "action";
 
 export type message = {
   id: string;
-  from: "system" | "playerId";
+  from: "system" | string;
   type: chatType;
   content: string;
   timestamp: number;
 };
 
 export type turn = {
-  currentPlayerId: string;
+  currentPlayerId: null | string;
   endsAt: number;
   durationMs: number;
 };
@@ -36,13 +36,13 @@ export interface PublicPlayer {
 export interface PublicGameState {
   roomId: RoomId;
   mode: mode;
-  hostPlayerId: PlayerId;
   phase: phase;
   round: number;
   maxRounds: number;
-  turn: turn | null;
+  turn: turn;
+  hostPlayerId: PlayerId;
   players: Record<PlayerId, PublicPlayer>;
-  eliminatedPlayers : Record<PlayerId, eliminatedPlayer> | null;
+  eliminatedPlayers: Record<PlayerId, eliminatedPlayer>;
   messages: [message];
   difficulty?: "easy" | "hard";
   roundTimerSeconds?: number;

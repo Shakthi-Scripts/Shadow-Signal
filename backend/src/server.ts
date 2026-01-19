@@ -7,6 +7,7 @@ import type {
   InterServerEvents,
   SocketData,
 } from "./socket/socket.types.js";
+import { onConnection } from "./socket/connection.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -20,6 +21,10 @@ export const io = new Server<
 >(server, {
   cors: { origin: "*" },
 });
+
+io.on("connection", (socket) => {
+  onConnection(socket);
+})
 
 server.listen(PORT, () => {
   console.log("Server is listening on", PORT);
