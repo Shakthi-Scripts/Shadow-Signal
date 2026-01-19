@@ -12,7 +12,7 @@ export type message = {
 };
 
 export type turn = {
-  currentPlayerId: null | string;
+  currentPlayerId: string;
   endsAt: number;
   durationMs: number;
 };
@@ -36,11 +36,12 @@ export interface PublicPlayer {
 export interface PublicGameState {
   roomId: RoomId;
   mode: mode;
+  hostPlayerId: PlayerId;
   phase: phase;
   round: number;
   maxRounds: number;
-  turn: turn;
+  turn: turn | null;
   players: Record<PlayerId, PublicPlayer>;
-  eliminatedPlayers : Record<PlayerId, eliminatedPlayer>;
+  eliminatedPlayers : Record<PlayerId, eliminatedPlayer> | null;
   messages: [message];
 }

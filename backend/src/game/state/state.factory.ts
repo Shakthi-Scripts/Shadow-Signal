@@ -1,20 +1,26 @@
 import type { GameState } from "./game.state.js";
 import { v4 as uuidV4 } from "uuid";
 
-export function createInitialState(roomId: string, hostId: string, alias: string, inviteCode: string): GameState {
+export function createInitialState(
+  roomId: string,
+  hostPlayerId: string,
+  alias: string,
+  inviteCode: string
+): GameState {
   const currentTimestamp = new Date().getTime();
   return {
     id: roomId,
     inviteCode: inviteCode,
+    hostPlayerId: hostPlayerId,
     phase: "lobby",
     mode: "infiltrator",
     maxRounds: 6,
     round: -1,
     players: new Map([
       [
-        hostId,
+        hostPlayerId,
         {
-          id: hostId,
+          id: hostPlayerId,
           name: alias,
           alive: true,
           connected: true,
@@ -22,11 +28,12 @@ export function createInitialState(roomId: string, hostId: string, alias: string
         },
       ],
     ]),
+    speakingOrder: [],
+    currentTurnIndex: -1,
     eliminatedPlayers: null,
     turn: null,
     votes: null,
     voteType: "secret",
-
     messages: [
       {
         id: uuidV4(),
@@ -38,5 +45,9 @@ export function createInitialState(roomId: string, hostId: string, alias: string
     ],
     version: 0,
     lastUpdatedAt: currentTimestamp,
+    hostId: hostPlayerId,
+    roundTimerSeconds: 60,
+    voteTimerSeconds: 30,
+    difficulty: "easy"
   };
 }
