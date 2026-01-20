@@ -1,8 +1,9 @@
 # Shadow Signal
 Shadow Signal is a real-time small multiplayer web game built to enable users to create and join rooms and communicate seamlessly. Players join a private room and try to identify who does not belong, based on hidden roles and secret words.
 
-# 🚀 Live Demo
-🔗 shadow-signal-ashen.vercel.app
+## 🚀 Live Demo
+🔗 [Shadow Signal Live](https://shadow-signal-ashen.vercel.app)
+
 
 > ⚠️ **Note:**  
 > The backend is hosted on **Render free services**. If the server has been inactive, the first request (such as creating or joining a room) may take **25–30 seconds** to respond. Please allow some time for the server to spin up.
@@ -34,9 +35,11 @@ Shadow Signal is a real-time small multiplayer web game built to enable users to
 ---
 
 ## 📂 Project Structure
+
+```text
 Shadow-Signal/
 ├── frontend/ # Frontend application
-├── backend/ # Backend server and APIs
+├── backend/  # Backend server and APIs
 └── README.md
 
 ## Run Backend
@@ -52,5 +55,6 @@ Shadow-Signal/
 ## 🐞 Known Issues
 There are a few minor bugs currently present.
 Fixes are planned and may be pushed as updates.
+
 
 
