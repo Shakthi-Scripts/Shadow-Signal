@@ -1,5 +1,5 @@
 # Shadow Signal
-Shadow Signal is a real-time full-stack application built to enable users to create and join rooms and communicate seamlessly. This project was developed as part of a technical assessment to demonstrate full-stack development skills, real-time communication, and clean project structure.
+Shadow Signal is a real-time small multiplayer web game built to enable users to create and join rooms and communicate seamlessly. Players join a private room and try to identify who does not belong, based on hidden roles and secret words.
 
 # 🚀 Live Demo
 🔗 shadow-signal-ashen.vercel.app
@@ -35,10 +35,9 @@ Shadow Signal is a real-time full-stack application built to enable users to cre
 
 ## 📂 Project Structure
 Shadow-Signal/
-│
 ├── frontend/ # Frontend application
 ├── backend/ # Backend server and APIs
-├── README.md
+└── README.md
 
 ## Run Backend
 - cd backend
@@ -53,4 +52,5 @@ Shadow-Signal/
 ## 🐞 Known Issues
 There are a few minor bugs currently present.
 Fixes are planned and may be pushed as updates.
+
 
