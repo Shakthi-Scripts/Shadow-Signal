@@ -1,0 +1,406 @@
+import { Socket } from "socket.io";
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "../socket.types.js";
+import { v4 as uuidV4 } from "uuid";
+import { getRoom } from "../../game/rooms/room.manager.js";
+import { startGame } from "../../game/flow/game.start.js";
+import {
+  getPlayerSecretWord,
+  serializeGameState,
+} from "../../game/state/state.serializer.js";
+import { io } from "../../server.js";
+import { endTurnEarly, startTurn } from "../../game/flow/turn.manager.js";
+import {
+  allPlayersVoted,
+  castVote,
+  completeVoting,
+} from "../../game/flow/voting.manager.js";
+
+type SocketType = Socket<ClientToServerEvents, ServerToClientEvents>;
+
+export function registerActionEvents(socket: SocketType) {
+  socket.on("game:start", async (payload) => {
+    try {
+      const roomId = socket.data.roomId;
+      if (!roomId) {
+        socket.emit("error", { message: "Not in a room" });
+        return;
+      }
+
+      const room = getRoom(roomId);
+      if (!room) {
+        socket.emit("error", { message: "Room not found" });
+        return;
+      }
+
+      // Check if player is host
+      if (room.state.hostPlayerId !== socket.data.playerId) {
+        socket.emit("error", { message: "Only the host can start the game" });
+        return;
+      }
+
+      // Check if game is in lobby
+      if (room.state.phase !== "lobby") {
+        socket.emit("error", { message: "Game has already started" });
+        return;
+      }
+
+      // Get game config from payload or use defaults
+      const config = {
+        mode: payload?.mode || room.state.mode,
+        difficulty: payload?.difficulty || "easy",
+        roundTimerSeconds:
+          payload?.roundTimerSeconds || room.state.roundTimerSeconds,
+        voteTimerSeconds:
+          payload?.voteTimerSeconds || room.state.voteTimerSeconds,
+        maxRounds: payload?.maxRounds || room.state.maxRounds,
+      };
+
+      await startGame(room.state, config);
+
+      // Broadcast game started
+      const publicState = serializeGameState(room.state, socket.data.playerId);
+      io.to(roomId).emit("game:started", publicState);
+
+      // Send secret words to each player
+      room.state.players.forEach((player, playerId) => {
+        const secretWord = getPlayerSecretWord(room.state, playerId);
+        io.to(playerId).emit("role:assigned", {
+          role:
+            player.secretWord === null
+              ? room.state.mode === "infiltrator"
+                ? "infiltrator"
+                : "spy"
+              : room.state.mode === "infiltrator"
+                ? "citizen"
+                : "agent",
+          word: secretWord,
+        });
+      });
+
+      // Broadcast initial state (before word reveal)
+      const initialState = serializeGameState(room.state, socket.data.playerId);
+      io.to(roomId).emit("room:state", initialState);
+
+      // Wait 5 seconds for word reveal, then start first turn
+      setTimeout(() => {
+        const currentRoom = getRoom(roomId);
+        if (currentRoom && currentRoom.state.phase === "playing") {
+          startTurn(currentRoom.state);
+          const updatedState = serializeGameState(
+            currentRoom.state,
+            socket.data.playerId,
+          );
+          io.to(roomId).emit("room:state", updatedState);
+        }
+      }, 5000);
+    } catch (error: any) {
+      console.error("Error starting game:", error);
+      socket.emit("error", {
+        message: error.message || "Failed to start game",
+      });
+    }
+  });
+
+  socket.on("turn:end", () => {
+    try {
+      const roomId = socket.data.roomId;
+      if (!roomId) {
+        socket.emit("error", { message: "Not in a room" });
+        return;
+      }
+
+      const room = getRoom(roomId);
+      if (!room) {
+        socket.emit("error", { message: "Room not found" });
+        return;
+      }
+
+      endTurnEarly(room.state, socket.data.playerId);
+
+      const publicState = serializeGameState(room.state, socket.data.playerId);
+      io.to(roomId).emit("room:state", publicState);
+    } catch (error: any) {
+      console.error("Error ending turn:", error);
+      socket.emit("error", { message: error.message || "Failed to end turn" });
+    }
+  });
+
+  socket.on("chat:send", ({ content }) => {
+    try {
+      const roomId = socket.data.roomId;
+      if (!roomId) {
+        socket.emit("error", { message: "Not in a room" });
+        return;
+      }
+
+      const room = getRoom(roomId);
+      if (!room) {
+        socket.emit("error", { message: "Room not found" });
+        return;
+      }
+
+      // Validate message
+      if (!content || content.trim().length === 0) {
+        return;
+      }
+
+      if (content.length > 500) {
+        socket.emit("error", {
+          message: "Message too long (max 500 characters)",
+        });
+        return;
+      }
+
+      const player = room.state.players.get(socket.data.playerId);
+      if (!player) {
+        return;
+      }
+
+      // Check if player is eliminated
+      if (!player.alive) {
+        socket.emit("error", {
+          message: "Eliminated players cannot send messages",
+        });
+        return;
+      }
+
+      // Check chat restrictions based on phase
+      if (room.state.phase === "playing") {
+        // In playing phase, only allow chat on player's turn
+        if (
+          !room.state.turn ||
+          room.state.turn.currentPlayerId !== socket.data.playerId
+        ) {
+          socket.emit("error", {
+            message: "You can only chat during your turn",
+          });
+          return;
+        }
+      } else if (room.state.phase === "voting") {
+        // Allow chat during voting phase
+        // No additional checks needed
+      } else {
+        // No chat restrictions in lobby or ended phase
+        // Allow chat in lobby and ended phase
+      }
+
+      // Add message
+      const message = {
+        id: uuidV4(),
+        type: "chat" as const,
+        from: socket.data.playerId,
+        content: content.trim(),
+        timestamp: new Date().getTime(),
+      };
+
+      room.state.messages.push(message);
+      room.state.lastUpdatedAt = new Date().getTime();
+      room.state.version += 1;
+
+      const publicState = serializeGameState(room.state, socket.data.playerId);
+      io.to(roomId).emit("room:state", publicState);
+    } catch (error: any) {
+      console.error("Error sending chat:", error);
+      socket.emit("error", {
+        message: error.message || "Failed to send message",
+      });
+    }
+  });
+
+  socket.on("vote:cast", ({ targetId }, ack) => {
+    try {
+      const roomId = socket.data.roomId;
+      if (!roomId) {
+        ack?.({ success: false, reason: "Not in a room" });
+        socket.emit("error", { message: "Not in a room" });
+        return;
+      }
+
+      const room = getRoom(roomId);
+      if (!room) {
+        ack?.({ success: false, reason: "Room not found" });
+        socket.emit("error", { message: "Room not found" });
+        return;
+      }
+
+      const success = castVote(room.state, socket.data.playerId, targetId);
+
+      if (!success) {
+        ack?.({ success: false, reason: "Invalid vote" });
+        return;
+      }
+
+      ack?.({ success: true });
+
+      // Broadcast vote progress
+      const votesCast = room.state.votes?.byPlayer?.size || 0;
+      const totalPlayers = Array.from(room.state.players.values()).filter(
+        (p) => p.alive && p.connected,
+      ).length;
+
+      if (room.state.voteType === "public") {
+        const tally: Record<string, number> = {};
+        room.state.votes?.tally?.forEach((votes, playerId) => {
+          tally[playerId] = votes;
+        });
+        io.to(roomId).emit("vote:update", {
+          tally,
+          lastVote: { voterId: socket.data.playerId, targetId },
+        });
+      } else {
+        io.to(roomId).emit("vote:progress", {
+          votesCast,
+          totalPlayers,
+        });
+      }
+
+      // Check if all players voted
+      if (allPlayersVoted(room.state)) {
+        completeVoting(room.state);
+        const publicState = serializeGameState(
+          room.state,
+          socket.data.playerId,
+        );
+        io.to(roomId).emit("room:state", publicState);
+
+        // Broadcast who voted for whom along with final tally
+        const tally: Record<string, number> = {};
+        room.state.votes?.tally?.forEach((votes, playerId) => {
+          tally[playerId] = votes;
+        });
+        const byPlayer: Record<string, string> = {};
+        room.state.votes?.byPlayer?.forEach((vote, voterId) => {
+          byPlayer[voterId] = vote.targetId;
+        });
+        io.to(roomId).emit("vote:reveal", {
+          tally,
+          byPlayer,
+        });
+      }
+    } catch (error: any) {
+      console.error("Error casting vote:", error);
+      ack?.({ success: false, reason: error.message || "Failed to cast vote" });
+      socket.emit("error", { message: error.message || "Failed to cast vote" });
+    }
+  });
+
+  socket.on("vote:reveal", () => {
+    try {
+      const roomId = socket.data.roomId;
+      if (!roomId) {
+        socket.emit("error", { message: "Not in a room" });
+        return;
+      }
+
+      const room = getRoom(roomId);
+      if (!room) {
+        socket.emit("error", { message: "Room not found" });
+        return;
+      }
+
+      // Only host can reveal votes early
+      if (room.state.hostId !== socket.data.playerId) {
+        socket.emit("error", { message: "Only the host can reveal votes" });
+        return;
+      }
+
+      if (room.state.phase !== "voting" || !room.state.votes) {
+        socket.emit("error", { message: "Not in voting phase" });
+        return;
+      }
+
+      completeVoting(room.state);
+
+      const tally: Record<string, number> = {};
+      room.state.votes?.tally?.forEach((votes, playerId) => {
+        tally[playerId] = votes;
+      });
+
+      const byPlayer: Record<string, string> = {};
+      room.state.votes?.byPlayer?.forEach((vote, voterId) => {
+        byPlayer[voterId] = vote.targetId;
+      });
+
+      io.to(roomId).emit("vote:reveal", { tally, byPlayer });
+
+      const publicState = serializeGameState(room.state, socket.data.playerId);
+      io.to(roomId).emit("room:state", publicState);
+    } catch (error: any) {
+      console.error("Error revealing votes:", error);
+      socket.emit("error", {
+        message: error.message || "Failed to reveal votes",
+      });
+    }
+  });
+
+  socket.on("game:config:update", (payload) => {
+    try {
+      const roomId = socket.data.roomId;
+      if (!roomId) {
+        socket.emit("error", { message: "Not in a room" });
+        return;
+      }
+
+      const room = getRoom(roomId);
+      if (!room) {
+        socket.emit("error", { message: "Room not found" });
+        return;
+      }
+
+      // Check if player is host
+      if (room.state.hostPlayerId !== socket.data.playerId) {
+        socket.emit("error", {
+          message: "Only the host can update game config",
+        });
+        return;
+      }
+
+      // Check if game is in lobby
+      if (room.state.phase !== "lobby") {
+        socket.emit("error", {
+          message: "Game config can only be updated in lobby",
+        });
+        return;
+      }
+
+      // Update config fields if provided
+      if (payload.mode !== undefined) {
+        room.state.mode = payload.mode;
+      }
+      if (payload.difficulty !== undefined) {
+        room.state.difficulty = payload.difficulty;
+      }
+      if (payload.roundTimerSeconds !== undefined) {
+        room.state.roundTimerSeconds = payload.roundTimerSeconds;
+      }
+      if (payload.voteTimerSeconds !== undefined) {
+        room.state.voteTimerSeconds = payload.voteTimerSeconds;
+      }
+      if (payload.maxRounds !== undefined) {
+        // Validate maxRounds is between 3 and 12
+        if (payload.maxRounds < 3 || payload.maxRounds > 12) {
+          socket.emit("error", {
+            message: "maxRounds must be between 3 and 12",
+          });
+          return;
+        }
+        room.state.maxRounds = payload.maxRounds;
+      }
+      if (payload.maxPlayers !== undefined) {
+        room.state.maxPlayers = payload.maxPlayers;
+      }
+
+      // Broadcast updated state to all players
+      const publicState = serializeGameState(room.state, socket.data.playerId);
+      io.to(roomId).emit("room:state", publicState);
+    } catch (error: any) {
+      console.error("Error updating game config:", error);
+      socket.emit("error", {
+        message: error.message || "Failed to update game config",
+      });
+    }
+  });
+}
