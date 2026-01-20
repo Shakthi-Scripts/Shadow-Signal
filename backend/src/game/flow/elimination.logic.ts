@@ -20,40 +20,39 @@ export function processElimination(state: GameState): void {
     return;
   }
 
-  // Find player with most votes
+  // Find player(s) with most votes among alive players
   let maxVotes = -1;
-  let eliminatedPlayerId: string | null = null;
+  const topCandidates: string[] = [];
 
   state.votes.tally.forEach((votes, playerId) => {
     const player = state.players.get(playerId);
-    if (player && player.alive && votes > maxVotes) {
+    if (!player || !player.alive) {
+      return;
+    }
+
+    if (votes > maxVotes) {
       maxVotes = votes;
-      eliminatedPlayerId = playerId;
+      topCandidates.length = 0;
+      topCandidates.push(playerId);
+    } else if (votes === maxVotes && votes > 0) {
+      topCandidates.push(playerId);
     }
   });
 
-  // Handle tie - if multiple players have same max votes, eliminate randomly
-  if (eliminatedPlayerId) {
-    const tiedPlayers: string[] = [];
-    state.votes.tally.forEach((votes, playerId) => {
-      if (votes === maxVotes) {
-        const player = state.players.get(playerId);
-        if (player && player.alive) {
-          tiedPlayers.push(playerId);
-        }
-      }
-    });
-
-    if (tiedPlayers.length > 1) {
-      // Randomly select from tied players
-      eliminatedPlayerId =
-        tiedPlayers[Math.floor(Math.random() * tiedPlayers.length)] || null;
-    }
+  // Tie or no majority: no one is eliminated
+  if (maxVotes <= 0 || topCandidates.length !== 1) {
+    addSystemMessage(
+      state,
+      "No one was eliminated this round due to a tie in votes.",
+    );
+    startNextRound(state);
+    return;
   }
 
+  const eliminatedPlayerId = topCandidates[0];
+
   if (!eliminatedPlayerId) {
-    // No one was voted out (shouldn't happen, but handle gracefully)
-    addSystemMessage(state, "No one was eliminated this round.");
+    addSystemMessage(state, "No player was eliminated this round.");
     startNextRound(state);
     return;
   }

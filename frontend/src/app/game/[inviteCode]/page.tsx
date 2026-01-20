@@ -82,7 +82,13 @@ export default function GamePage() {
   });
   const [voteTally, setVoteTally] = useState<Record<string, number>>({});
   const [votesRevealed, setVotesRevealed] = useState<boolean>(false);
+  const [voteSummary, setVoteSummary] = useState<Record<string, string> | null>(
+    null,
+  );
+  const [showVoteSummaryScreen, setShowVoteSummaryScreen] =
+    useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [isStartingGame, setIsStartingGame] = useState(false);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const joinRequestedRef = useRef(false);
 
@@ -212,11 +218,19 @@ export default function GamePage() {
   );
 
   // Listen for vote reveal
-  useSocketEvent<{ tally: Record<string, number> }>(
+  useSocketEvent<{ tally: Record<string, number>; byPlayer?: Record<string, string> }>(
     "vote:reveal",
     (payload) => {
       setVoteTally(payload.tally);
       setVotesRevealed(true);
+      if (payload.byPlayer) {
+        setVoteSummary(payload.byPlayer);
+        setShowVoteSummaryScreen(true);
+        // Hide summary after a short delay
+        setTimeout(() => {
+          setShowVoteSummaryScreen(false);
+        }, 4000);
+      }
     },
     [],
   );
@@ -224,6 +238,8 @@ export default function GamePage() {
   // Handle game start
   const handleStartGame = () => {
     if (!socket) return;
+
+    setIsStartingGame(true);
 
     // Send game config with start event
     socket.emit("game:start", {
@@ -234,6 +250,15 @@ export default function GamePage() {
       maxRounds: gameConfig.maxRounds,
     });
   };
+
+  // Clear starting state once server confirms game started
+  useSocketEvent<PublicGameState>(
+    "game:started",
+    () => {
+      setIsStartingGame(false);
+    },
+    [],
+  );
 
   // Handle turn end
   const handleEndTurn = () => {
@@ -403,6 +428,7 @@ export default function GamePage() {
             gameConfig={gameConfig}
             setGameState={setGameConfig}
             onStartGame={handleStartGame}
+            isStartingGame={isStartingGame}
             isHost={Boolean(gameState.hostPlayerId === playerId)}
             onConfigUpdate={(config) => {
               if (!socket) return;
@@ -425,8 +451,12 @@ export default function GamePage() {
   }
 
   if (gameState.phase === "playing") {
+    const isInfiltrator = playerRole === "infiltrator";
+    const infiltratorTip =
+      "You are the Infiltrator. No secret word is assigned to you. Infer the hidden word from others’ hints and describe it intuitively without revealing you have no word.";
+    const displayWord = isInfiltrator ? "NO WORD ASSIGNED" : playerWord || "NONE";
     // Show word reveal screen for 5 seconds after role reveal
-    if (showWordReveal && playerWord) {
+    if (showWordReveal && playerWord && !isInfiltrator) {
       return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-[rgb(15,21,23)] px-4">
           <div className="max-w-2xl text-center">
@@ -456,15 +486,22 @@ export default function GamePage() {
           </div>
           <div className="mx-auto -mt-6 max-w-6xl px-6">
             <div className="flex flex-col gap-8 md:flex-row md:items-start">
-              <RoleSecretCode
-                word={playerWord || "NONE"}
-                wordColor="#ffffff"
-                secretWord={
-                  playerRole === "infiltrator" || playerRole === "spy"
-                    ? "SECRET ROLE"
-                    : "YOUR WORD"
-                }
-              />
+              <div className="flex flex-1 flex-col gap-4">
+                <RoleSecretCode
+                  word={displayWord}
+                  wordColor="#ffffff"
+                  secretWord={
+                    playerRole === "infiltrator" || playerRole === "spy"
+                      ? "SECRET ROLE"
+                      : "YOUR WORD"
+                  }
+                />
+                {isInfiltrator && (
+                  <p className="text-xs text-white/70">
+                    {infiltratorTip}
+                  </p>
+                )}
+              </div>
               <div className="flex w-full max-w-md flex-col">
                 <RoleCurrentAssignment
                   role={
@@ -527,14 +564,14 @@ export default function GamePage() {
             </div>
             <div className="mt-8 mb-6 flex flex-col items-center gap-4 px-6 lg:hidden">
               <InGameSecretCard
-                word={playerWord || "NONE"}
+                word={displayWord}
                 wordColor="#ffffff"
               />
               {isMyTurn && <InGameEndRound onEndTurn={handleEndTurn} />}
             </div>
             <div className="hidden items-end justify-between px-6 pb-6 lg:flex">
               <InGameSecretCard
-                word={playerWord || "NONE"}
+                word={displayWord}
                 wordColor="#ffffff"
               />
               {isMyTurn && <InGameEndRound onEndTurn={handleEndTurn} />}
@@ -557,6 +594,44 @@ export default function GamePage() {
     );
     const currentPlayer = gameState.players[playerId || ""];
     const currentPlayerAlive = currentPlayer?.alive ?? false;
+
+    if (showVoteSummaryScreen && voteSummary) {
+      const playersById = gameState.players;
+      return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-[rgb(15,21,23)] px-4">
+          <div className="w-full max-w-2xl rounded-lg border border-emerald-500/30 bg-black/40 p-6">
+            <h2 className="mb-4 text-center text-lg font-semibold tracking-[0.3em] text-white">
+              VOTE SUMMARY
+            </h2>
+            <p className="mb-4 text-center text-xs text-white/60">
+              Briefly showing who voted for whom before elimination.
+            </p>
+            <div className="max-h-64 space-y-2 overflow-y-auto text-sm text-white/80">
+              {Object.entries(voteSummary).map(([voterId, targetId]) => {
+                const voter = playersById[voterId];
+                const target = playersById[targetId];
+                return (
+                  <div
+                    key={`${voterId}-${targetId}-${Math.random()}`}
+                    className="flex items-center justify-between rounded border border-white/10 bg-white/5 px-3 py-2"
+                  >
+                    <span className="truncate pr-2 text-xs font-semibold">
+                      {voter?.name ?? "Unknown"}
+                    </span>
+                    <span className="text-[10px] tracking-widest text-white/40">
+                      VOTED →
+                    </span>
+                    <span className="truncate pl-2 text-xs font-semibold text-emerald-300">
+                      {target?.name ?? "Unknown"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="min-h-screen bg-[rgb(15,21,23)]">

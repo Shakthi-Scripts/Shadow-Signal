@@ -108,6 +108,7 @@ export function registerRoomEvents(socket: SocketType) {
       }
 
       socket.join(room.id);
+      socket.join(playerId);
 
       socket.data.roomId = room.id;
       socket.data.playerId = playerId;

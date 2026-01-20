@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { getRoom, deleteRoom } from "../game/rooms/room.manager.js";
+import { getRoom, deleteRoom, getAllRooms } from "../game/rooms/room.manager.js";
 import { checkTurnTimer } from "../game/flow/turn.manager.js";
 import { checkVotingTimer } from "../game/flow/voting.manager.js";
 import { processElimination } from "../game/flow/elimination.logic.js";
@@ -112,8 +112,7 @@ export function onConnection(socket: SocketType) {
 // Game loop to check timers every second
 export function startGameLoop() {
   setInterval(() => {
-    const { getAllRooms } = require("../game/rooms/room.manager.js");
-    const rooms = getAllRooms?.() || [];
+    const rooms = getAllRooms();
 
     rooms.forEach((room: any) => {
       if (room.state.phase === "playing") {

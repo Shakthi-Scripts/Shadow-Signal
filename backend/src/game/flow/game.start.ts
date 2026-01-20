@@ -50,16 +50,12 @@ export async function startGame(
   let words: { citizenWord: string; spyWord?: string };
 
   if (config.mode === "infiltrator") {
-    // const citizenWord = selectWordForInfiltratorMode();
-    //test
-    const citizenWord = "TestWord";
+    // Infiltrator mode: everyone except the infiltrator gets the same word
+    const citizenWord = selectWordForInfiltratorMode();
     words = { citizenWord };
   } else {
-    // const wordPair = await selectWordsForSpyMode();
-    const wordPair = {
-      agentWord: "",
-      spyWord: "",
-    };
+    // Spy mode: agents share a base word, spy gets a similar-but-different word
+    const wordPair = await selectWordsForSpyMode();
     words = {
       citizenWord: wordPair.agentWord,
       spyWord: wordPair.spyWord,

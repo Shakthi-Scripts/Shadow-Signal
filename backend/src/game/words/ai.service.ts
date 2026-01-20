@@ -1,20 +1,21 @@
-/**
- * AI Service for generating similar but different words for Spy mode
- * Uses OpenAI API or fallback to dataset similar words
- */
+import "dotenv/config";
+import { GoogleGenAI } from "@google/genai";
 
-type WordPair = {
-  word: string;
-  spyWord: string;
-};
 
 export class AIService {
-  private apiKey: string | undefined;
-  private baseURL: string;
+  private client: GoogleGenAI | null;
+  private model: string;
 
   constructor() {
-    this.apiKey = process.env.OPENAI_API_KEY;
-    this.baseURL = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
+    /**
+     * GoogleGenAI will read GEMINI_API_KEY from the environment by default.
+     * We instantiate the client only if a key is present so that the rest of
+     * the backend can run without Gemini configured (and fall back to dataset).
+     */
+    const apiKey = process.env.GEMINI_API_KEY;
+    console.log("apiKey", apiKey);
+    this.client = apiKey ? new GoogleGenAI({ apiKey }) : null;
+    this.model = process.env.GEMINI_MODEL || "gemini-3-flash-preview";
   }
 
   /**
@@ -22,45 +23,64 @@ export class AIService {
    * Falls back to dataset similar words if AI is unavailable
    */
   async generateSpyWord(word: string, similarWords: string[]): Promise<string> {
-    // If no API key, use fallback
-    if (!this.apiKey) {
+    // If no client (no API key), use fallback
+    if (!this.client) {
       return this.fallbackSpyWord(word, similarWords);
     }
 
     try {
-      const response = await fetch(`${this.baseURL}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a word association assistant. Given a word, provide a single similar but different word that could be confused with it in a word-guessing game. Return only the word, nothing else.",
+      const response = await this.client.models.generateContent({
+        model: this.model,
+        contents:
+          "You are a word association assistant for a social deduction word game.\n" +
+          `Base word: "${word}". Example mappings: Beach -> Island, Dog -> Wolf, Pizza -> Pasta.\n` +
+          (similarWords.length
+            ? `Optional similar words from a dataset you MAY choose from or be inspired by: ${similarWords.join(
+                ", ",
+              )}.\n`
+            : "No additional similar words provided.\n") +
+          "Respond with a JSON object containing a single property `spyWord` which is one similar but different word.",
+        config: {
+          // Ask the model to return strict JSON for easier parsing
+          responseMimeType: "application/json",
+          responseJsonSchema: {
+            type: "object",
+            properties: {
+              spyWord: {
+                type: "string",
+                description:
+                  "A single similar but different word related to the base word.",
+              },
             },
-            {
-              role: "user",
-              content: `Given the word "${word}", provide a similar but different word. It should be related but distinct enough that players could confuse them. Examples: "Beach" -> "Island", "Dog" -> "Wolf", "Pizza" -> "Pasta".`,
-            },
-          ],
-          max_tokens: 10,
+            required: ["spyWord"],
+            additionalProperties: false,
+          },
+          // Keep temperature moderate; we just need a nearby word, not heavy reasoning.
           temperature: 0.7,
-        }),
+        },
       });
 
-      if (!response.ok) {
-        throw new Error(`AI API error: ${response.statusText}`);
+      const rawText: string | undefined = response.text;
+
+      if (!rawText) {
+        return this.fallbackSpyWord(word, similarWords);
       }
 
-      const data = await response.json();
-      const spyWord = "test"; // TODO: remove this
+      // Expect a JSON object like: { "spyWord": "Island" }
+      let parsed: any;
+      try {
+        parsed = JSON.parse(rawText);
+      } catch {
+        return this.fallbackSpyWord(word, similarWords);
+      }
 
-      if (spyWord && spyWord.length > 0) {
-        return spyWord;
+      const candidate =
+        parsed && typeof parsed.spyWord === "string"
+          ? (parsed.spyWord as string).trim()
+          : "";
+
+      if (candidate.length > 0) {
+        return candidate;
       }
 
       return this.fallbackSpyWord(word, similarWords);

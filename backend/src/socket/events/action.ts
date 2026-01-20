@@ -265,6 +265,20 @@ export function registerActionEvents(socket: SocketType) {
           socket.data.playerId,
         );
         io.to(roomId).emit("room:state", publicState);
+
+        // Broadcast who voted for whom along with final tally
+        const tally: Record<string, number> = {};
+        room.state.votes?.tally?.forEach((votes, playerId) => {
+          tally[playerId] = votes;
+        });
+        const byPlayer: Record<string, string> = {};
+        room.state.votes?.byPlayer?.forEach((vote, voterId) => {
+          byPlayer[voterId] = vote.targetId;
+        });
+        io.to(roomId).emit("vote:reveal", {
+          tally,
+          byPlayer,
+        });
       }
     } catch (error: any) {
       console.error("Error casting vote:", error);
@@ -305,7 +319,12 @@ export function registerActionEvents(socket: SocketType) {
         tally[playerId] = votes;
       });
 
-      io.to(roomId).emit("vote:reveal", { tally });
+      const byPlayer: Record<string, string> = {};
+      room.state.votes?.byPlayer?.forEach((vote, voterId) => {
+        byPlayer[voterId] = vote.targetId;
+      });
+
+      io.to(roomId).emit("vote:reveal", { tally, byPlayer });
 
       const publicState = serializeGameState(room.state, socket.data.playerId);
       io.to(roomId).emit("room:state", publicState);
