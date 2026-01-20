@@ -5,14 +5,22 @@ import JoinRoom from "@/components/JoinRoom";
 import CreateRoom from "@/components/CreateRoom";
 import BottomBar from "@/components/BottomBar";
 import Footer from "@/components/Footer";
+import { SpyIcon } from "@/components/icons";
 
 export default function Home() {
   return (
-    <div className="sticky top-0 z-50 flex min-h-screen w-screen flex-col items-center border-b border-white/10 bg-[rgb(15,35,32)] backdrop-blur-md">
-      <div className="flex w-full max-w-7xl flex-wrap items-center justify-between gap-y-2 px-3 py-3 sm:px-4 md:flex-nowrap md:gap-y-0">
+<div className="sticky top-0 z-50 flex min-h-screen w-screen flex-col items-center border-b border-white/10 
+  bg-[rgb(15,35,32)] backdrop-blur-md">
+  
+  <div className="flex grow w-full flex-wrap items-center justify-between 
+    gap-y-2 px-3 py-3 sm:px-4 md:flex-nowrap md:gap-y-0">
+        
+        <div className="flex items-center gap-4">
+          <SpyIcon size="30" className="text-white"/>
         <h2 className="text-xs font-bold whitespace-nowrap text-[rgb(0,209,174)] sm:text-sm md:text-lg lg:text-xl xl:text-2xl">
           SHADOW SIGNAL
         </h2>
+        </div>
 
         <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-4 md:gap-6">
           <LeftNavBar value="PROTOCOL" />
