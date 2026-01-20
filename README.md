@@ -35,7 +35,7 @@ Shadow Signal is a real-time small multiplayer web game built to enable users to
 ---
 
 ## 📂 Project Structure
-```bash
+```
 Shadow-Signal/
 ├── frontend/ # Frontend application
 ├── backend/  # Backend server and APIs
@@ -43,18 +43,23 @@ Shadow-Signal/
 ```
 
 ## Run Backend
-- cd backend
-- npm install
-- npm run dev
+```bash
+cd backend
+ npm install
+npm run dev
+```
 
 ## Run Frontend
-- cd frontend
-- npm install
-- npm run dev
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ## 🐞 Known Issues
 There are a few minor bugs currently present.
 Fixes are planned and may be pushed as updates.
+
 
 
 
