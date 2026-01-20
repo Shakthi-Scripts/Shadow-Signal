@@ -45,7 +45,7 @@ Shadow-Signal/
 ## Run Backend
 ```bash
 cd backend
- npm install
+npm install
 npm run dev
 ```
 
@@ -59,6 +59,7 @@ npm run dev
 ## 🐞 Known Issues
 There are a few minor bugs currently present.
 Fixes are planned and may be pushed as updates.
+
 
 
 
