@@ -41,15 +41,16 @@ Shadow-Signal/
 ├── README.md
 
 ## Run Backend
-cd backend
-npm install
-npm run dev
+- cd backend
+- npm install
+- npm run dev
 
 ## Run Frontend
-cd frontend
-npm install
-npm run dev
+- cd frontend
+- npm install
+- npm run dev
 
 ## 🐞 Known Issues
 There are a few minor bugs currently present.
 Fixes are planned and may be pushed as updates.
+
