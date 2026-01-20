@@ -13,7 +13,6 @@ export class AIService {
      * the backend can run without Gemini configured (and fall back to dataset).
      */
     const apiKey = process.env.GEMINI_API_KEY;
-    console.log("apiKey", apiKey);
     this.client = apiKey ? new GoogleGenAI({ apiKey }) : null;
     this.model = process.env.GEMINI_MODEL || "gemini-3-flash-preview";
   }

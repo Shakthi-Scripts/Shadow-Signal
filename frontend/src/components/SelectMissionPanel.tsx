@@ -104,9 +104,9 @@ export default function SelectMissionPanel({
             INFILTRATOR MODE
           </h3>
           <ul className="space-y-1 text-xs text-white/70">
-            <li>• Signal matching required</li>
-            <li>• Hidden agents</li>
-            <li>• High social deduction</li>
+            <li>• Infiltrator player has no word</li>
+            <li>• Infiltrator must Bluff to avoid detection </li>
+            <li>• Others share same secret word</li>
           </ul>
         </div>
 
@@ -122,9 +122,9 @@ export default function SelectMissionPanel({
         >
           <h3 className="mb-3 text-sm font-semibold text-white">SPY MODE</h3>
           <ul className="space-y-1 text-xs text-white/70">
-            <li>• Identity deception focus</li>
-            <li>• Double agent role</li>
-            <li>• Psychological gameplay</li>
+            <li>• SPY has similar word to the agents</li>
+            <li>• Subtle differences reveal spy</li>
+            <li>• Blend in through careful clues</li>
           </ul>
         </div>
       </div>

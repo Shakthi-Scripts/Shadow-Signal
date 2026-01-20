@@ -163,10 +163,6 @@ export default function JoinRoom() {
           >
             JOIN ROOM
           </button>
-
-          <span className="text-xs text-white/40 italic">
-            Authenticating via encrypted tunnel...
-          </span>
         </div>
       </div>
     </div>

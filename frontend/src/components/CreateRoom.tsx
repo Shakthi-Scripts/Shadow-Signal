@@ -47,8 +47,7 @@ export default function CreateRoom() {
         </div>
 
         <p className="text-sm leading-relaxed text-white/70">
-          Establish a new secure frequency. Invite up to 12 operators for a
-          deep-cover extraction mission.
+          Create a New Lobby with minimun 3 players! 
         </p>
 
         <input

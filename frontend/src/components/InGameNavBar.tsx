@@ -18,7 +18,9 @@ export default function InGameNavBar() {
           </span>
 
           <button className="flex h-8 w-8 items-center justify-center rounded-md border border-emerald-500/40 text-emerald-400 transition hover:bg-emerald-500/10 sm:h-9 sm:w-9">
-            ⚙
+            <span className="material-symbols-outlined text-white">
+              settings
+            </span>
           </button>
 
           <div className="text-right leading-tight">
