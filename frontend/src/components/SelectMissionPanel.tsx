@@ -16,6 +16,7 @@ type SelectMissionPanelProps = {
   setGameState: Dispatch<SetStateAction<GameConfigType>>;
   onStartGame?: () => void;
   isHost?: boolean;
+  isStartingGame?: boolean;
   onConfigUpdate?: (config: GameConfigType) => void;
 };
 
@@ -24,6 +25,7 @@ export default function SelectMissionPanel({
   setGameState,
   onStartGame,
   isHost = false,
+  isStartingGame = false,
   onConfigUpdate,
 }: SelectMissionPanelProps) {
   const { gameState } = useGame();
@@ -243,6 +245,7 @@ export default function SelectMissionPanel({
             disabled={
               !isHost ||
               !onStartGame ||
+              isStartingGame ||
               (gameState?.players &&
                 Object.keys(gameState.players).length < 3) ||
               maxPlayersExceeded
@@ -257,7 +260,7 @@ export default function SelectMissionPanel({
                 : undefined
             }
           >
-            START GAME
+            {isStartingGame ? "STARTING..." : "START GAME"}
           </button>
           {maxPlayersExceeded && (
             <div className="absolute -top-12 left-1/2 -translate-x-1/2 rounded-md bg-red-600 px-3 py-2 text-xs whitespace-nowrap text-white shadow-lg">

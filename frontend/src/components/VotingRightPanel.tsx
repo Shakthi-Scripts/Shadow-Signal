@@ -12,8 +12,13 @@ export default function VotingRightPanel({
   votesCast,
   totalPlayers,
 }: VotingRightPanelProps) {
-  const { gameState, playerWord } = useGame();
+  const { gameState, playerWord, playerRole } = useGame();
   const voteProgress = totalPlayers > 0 ? (votesCast / totalPlayers) * 100 : 0;
+
+  const effectiveWord =
+    playerRole === "infiltrator"
+      ? "NO WORD – You are the Infiltrator. Describe the hidden word based on others’ hints."
+      : playerWord || "NONE";
 
   return (
     <aside className="flex w-full flex-col border-t border-white/10 px-6 py-8 lg:w-80 lg:border-t-0 lg:border-l">
@@ -73,7 +78,7 @@ export default function VotingRightPanel({
         </p>
 
         <p className="mt-2 text-lg font-semibold tracking-widest text-white">
-          &quot;{playerWord || "NONE"}&quot;
+          &quot;{effectiveWord}&quot;
         </p>
 
         <p className="mt-2 text-xs text-white/40">

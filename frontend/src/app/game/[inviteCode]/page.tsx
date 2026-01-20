@@ -83,6 +83,7 @@ export default function GamePage() {
   const [voteTally, setVoteTally] = useState<Record<string, number>>({});
   const [votesRevealed, setVotesRevealed] = useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [isStartingGame, setIsStartingGame] = useState(false);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const joinRequestedRef = useRef(false);
 
@@ -225,6 +226,8 @@ export default function GamePage() {
   const handleStartGame = () => {
     if (!socket) return;
 
+    setIsStartingGame(true);
+
     // Send game config with start event
     socket.emit("game:start", {
       mode: gameConfig.mode,
@@ -234,6 +237,15 @@ export default function GamePage() {
       maxRounds: gameConfig.maxRounds,
     });
   };
+
+  // Clear starting state once server confirms game started
+  useSocketEvent<PublicGameState>(
+    "game:started",
+    () => {
+      setIsStartingGame(false);
+    },
+    [],
+  );
 
   // Handle turn end
   const handleEndTurn = () => {
@@ -403,6 +415,7 @@ export default function GamePage() {
             gameConfig={gameConfig}
             setGameState={setGameConfig}
             onStartGame={handleStartGame}
+            isStartingGame={isStartingGame}
             isHost={Boolean(gameState.hostPlayerId === playerId)}
             onConfigUpdate={(config) => {
               if (!socket) return;
@@ -425,8 +438,12 @@ export default function GamePage() {
   }
 
   if (gameState.phase === "playing") {
+    const isInfiltrator = playerRole === "infiltrator";
+    const infiltratorTip =
+      "You are the Infiltrator. No secret word is assigned to you. Infer the hidden word from others’ hints and describe it intuitively without revealing you have no word.";
+    const displayWord = isInfiltrator ? "NO WORD ASSIGNED" : playerWord || "NONE";
     // Show word reveal screen for 5 seconds after role reveal
-    if (showWordReveal && playerWord) {
+    if (showWordReveal && playerWord && !isInfiltrator) {
       return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-[rgb(15,21,23)] px-4">
           <div className="max-w-2xl text-center">
@@ -456,15 +473,22 @@ export default function GamePage() {
           </div>
           <div className="mx-auto -mt-6 max-w-6xl px-6">
             <div className="flex flex-col gap-8 md:flex-row md:items-start">
-              <RoleSecretCode
-                word={playerWord || "NONE"}
-                wordColor="#ffffff"
-                secretWord={
-                  playerRole === "infiltrator" || playerRole === "spy"
-                    ? "SECRET ROLE"
-                    : "YOUR WORD"
-                }
-              />
+              <div className="flex flex-1 flex-col gap-4">
+                <RoleSecretCode
+                  word={displayWord}
+                  wordColor="#ffffff"
+                  secretWord={
+                    playerRole === "infiltrator" || playerRole === "spy"
+                      ? "SECRET ROLE"
+                      : "YOUR WORD"
+                  }
+                />
+                {isInfiltrator && (
+                  <p className="text-xs text-white/70">
+                    {infiltratorTip}
+                  </p>
+                )}
+              </div>
               <div className="flex w-full max-w-md flex-col">
                 <RoleCurrentAssignment
                   role={
@@ -527,14 +551,14 @@ export default function GamePage() {
             </div>
             <div className="mt-8 mb-6 flex flex-col items-center gap-4 px-6 lg:hidden">
               <InGameSecretCard
-                word={playerWord || "NONE"}
+                word={displayWord}
                 wordColor="#ffffff"
               />
               {isMyTurn && <InGameEndRound onEndTurn={handleEndTurn} />}
             </div>
             <div className="hidden items-end justify-between px-6 pb-6 lg:flex">
               <InGameSecretCard
-                word={playerWord || "NONE"}
+                word={displayWord}
                 wordColor="#ffffff"
               />
               {isMyTurn && <InGameEndRound onEndTurn={handleEndTurn} />}

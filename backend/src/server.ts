@@ -8,6 +8,7 @@ import type {
   SocketData,
 } from "./socket/socket.types.js";
 import { onConnection } from "./socket/connection.js";
+import "dotenv/config";
 
 const PORT = process.env.PORT || 5000;
 

@@ -1,5 +1,5 @@
 import wordDataset from "./word.dataset.json" with { type: "json" };
-// import { aiService } from "./ai.service.js";
+import { aiService } from "./ai.service.js";
 
 type WordEntry = {
   word: string;
@@ -59,19 +59,21 @@ export async function selectWordsForSpyMode(): Promise<{
   const randomIndex = Math.floor(Math.random() * allWords.length);
   const selectedEntry = allWords[randomIndex];
 
-  // if(!selectedEntry) return {agentWord: "NONE", spyWord: "NUN"};
+  if (!selectedEntry) {
+    // Extremely defensive: should not happen if allWords.length > 0
+    return { agentWord: "UNKNOWN", spyWord: "UNKNOWN" };
+  }
 
-  // // Use AI to generate a similar but different word for the spy
-  // const spyWord = await aiService.generateSpyWord(
-  //   selectedEntry.word,
-  //   selectedEntry.similar
-  // );
+  // Use AI to generate a similar but different word for the spy
+  const spyWord = await aiService.generateSpyWord(
+    selectedEntry.word,
+    selectedEntry.similar,
+  );
 
-  // return {
-  //   agentWord: selectedEntry.word,
-  //   spyWord: spyWord,
-  // };
-  return { agentWord: "NONE", spyWord: "NUN" };
+  return {
+    agentWord: selectedEntry.word,
+    spyWord,
+  };
 }
 
 /**
