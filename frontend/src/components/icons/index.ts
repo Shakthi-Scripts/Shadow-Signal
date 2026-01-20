@@ -1,0 +1,2 @@
+export { SpyIcon } from "./SpyIcon"
+
