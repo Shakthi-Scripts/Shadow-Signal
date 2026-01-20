@@ -82,6 +82,11 @@ export default function GamePage() {
   });
   const [voteTally, setVoteTally] = useState<Record<string, number>>({});
   const [votesRevealed, setVotesRevealed] = useState<boolean>(false);
+  const [voteSummary, setVoteSummary] = useState<Record<string, string> | null>(
+    null,
+  );
+  const [showVoteSummaryScreen, setShowVoteSummaryScreen] =
+    useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [isStartingGame, setIsStartingGame] = useState(false);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -213,11 +218,19 @@ export default function GamePage() {
   );
 
   // Listen for vote reveal
-  useSocketEvent<{ tally: Record<string, number> }>(
+  useSocketEvent<{ tally: Record<string, number>; byPlayer?: Record<string, string> }>(
     "vote:reveal",
     (payload) => {
       setVoteTally(payload.tally);
       setVotesRevealed(true);
+      if (payload.byPlayer) {
+        setVoteSummary(payload.byPlayer);
+        setShowVoteSummaryScreen(true);
+        // Hide summary after a short delay
+        setTimeout(() => {
+          setShowVoteSummaryScreen(false);
+        }, 4000);
+      }
     },
     [],
   );
@@ -581,6 +594,44 @@ export default function GamePage() {
     );
     const currentPlayer = gameState.players[playerId || ""];
     const currentPlayerAlive = currentPlayer?.alive ?? false;
+
+    if (showVoteSummaryScreen && voteSummary) {
+      const playersById = gameState.players;
+      return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-[rgb(15,21,23)] px-4">
+          <div className="w-full max-w-2xl rounded-lg border border-emerald-500/30 bg-black/40 p-6">
+            <h2 className="mb-4 text-center text-lg font-semibold tracking-[0.3em] text-white">
+              VOTE SUMMARY
+            </h2>
+            <p className="mb-4 text-center text-xs text-white/60">
+              Briefly showing who voted for whom before elimination.
+            </p>
+            <div className="max-h-64 space-y-2 overflow-y-auto text-sm text-white/80">
+              {Object.entries(voteSummary).map(([voterId, targetId]) => {
+                const voter = playersById[voterId];
+                const target = playersById[targetId];
+                return (
+                  <div
+                    key={`${voterId}-${targetId}-${Math.random()}`}
+                    className="flex items-center justify-between rounded border border-white/10 bg-white/5 px-3 py-2"
+                  >
+                    <span className="truncate pr-2 text-xs font-semibold">
+                      {voter?.name ?? "Unknown"}
+                    </span>
+                    <span className="text-[10px] tracking-widest text-white/40">
+                      VOTED →
+                    </span>
+                    <span className="truncate pl-2 text-xs font-semibold text-emerald-300">
+                      {target?.name ?? "Unknown"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="min-h-screen bg-[rgb(15,21,23)]">

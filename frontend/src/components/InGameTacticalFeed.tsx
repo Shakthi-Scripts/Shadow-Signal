@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useGame } from "@/contexts/GameContext";
 import type { message } from "@/types/game";
 
@@ -31,6 +31,15 @@ export default function InGameTacticalFeed({
     onSendMessage();
   };
 
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [messages.length]);
+
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString("en-US", {
@@ -49,14 +58,17 @@ export default function InGameTacticalFeed({
   };
 
   return (
-    <aside className="w-full border-t border-white/10 bg-[rgb(13,20,19)] lg:flex lg:min-h-0 lg:w-80 lg:flex-col lg:border-t-0 lg:border-l">
+    <aside className="w-full border-t border-white/10 bg-[rgb(13,20,19)] lg:flex lg:h-[90vh] lg:w-80 lg:flex-col lg:border-t-0 lg:border-l">
       <div className="shrink-0 border-b border-white/10 px-4 py-3">
         <p className="text-xs tracking-widest text-emerald-400">
           TACTICAL FEED
         </p>
       </div>
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 text-sm text-white/70">
+      <div
+        ref={scrollContainerRef}
+        className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 text-sm text-white/70 max-h-[50vh] sm:max-h-none"
+      >
         {messages.length === 0 ? (
           <p className="text-white/40">No messages yet.</p>
         ) : (

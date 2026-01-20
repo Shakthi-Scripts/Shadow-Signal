@@ -17,7 +17,7 @@ export function createInitialState(
     mode: "infiltrator",
     maxRounds: 6,
     maxPlayers: maxPlayers,
-    round: -1,
+    round: 0,
     players: new Map([
       [
         hostPlayerId,

@@ -56,7 +56,10 @@ export interface ServerToClientEvents {
     votesCast: number;
     totalPlayers: number;
   }) => void;
-  "vote:reveal": (payload: { tally: Record<string, number> }) => void;
+  "vote:reveal": (payload: {
+    tally: Record<string, number>;
+    byPlayer?: Record<string, string>;
+  }) => void;
 }
 
 export interface InterServerEvents {
